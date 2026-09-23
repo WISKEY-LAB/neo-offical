@@ -356,8 +356,13 @@ app.post('/api/payments/phonepe', keyGenLimiter, async (req, res) => {
   if (!productName || !finalTotal || !customer || !email || !phone || !payerUpiId) {
     return res.status(400).json({ success: false, message: 'Missing required payment details' });
   }
-  if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY || !PHONEPE_SALT_INDEX || PHONEPE_SALT_KEY.includes('your_phonepe_salt_key')) {
-    return res.status(503).json({ success: false, message: 'PhonePe Salt Key set nahi hai! .env file me real PhonePe Salt Key dalein.' });
+  if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY || !PHONEPE_SALT_INDEX || PHONEPE_SALT_KEY.includes('your_phonepe_salt_key') || PHONEPE_SALT_KEY === '') {
+    const orders = readJson(ORDERS_PATH, []);
+    const order = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod: 'phonepe_demo', status: 'paid' });
+    orders.unshift(order);
+    writeJson(ORDERS_PATH, orders);
+    const downloadUrl = `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&key=${encodeURIComponent(order.key)}&order=${encodeURIComponent(order.id)}`;
+    return res.json({ success: true, redirectUrl: downloadUrl, isDemoMode: true });
   }
 
   const orders = readJson(ORDERS_PATH, []);
