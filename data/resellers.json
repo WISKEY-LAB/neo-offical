@@ -1,0 +1,32 @@
+[
+  {
+    "id": "RES-1790188974625",
+    "username": "harsh",
+    "password": "harsh123",
+    "name": "pannel",
+    "balance": 69975,
+    "allowedCategory": "all",
+    "createdAt": "2026-09-23T18:42:54.625Z",
+    "status": "active"
+  },
+  {
+    "id": "RES-101",
+    "username": "crack_reseller",
+    "password": "reseller123",
+    "name": "Crackpanel Official Reseller",
+    "balance": 2500,
+    "allowedCategory": "crackpanel",
+    "createdAt": "2026-09-24T00:00:00.000Z",
+    "status": "active"
+  },
+  {
+    "id": "RES-102",
+    "username": "vip_reseller",
+    "password": "reseller123",
+    "name": "VIP All-Panels Partner",
+    "balance": 5000,
+    "allowedCategory": "all",
+    "createdAt": "2026-09-24T00:00:00.000Z",
+    "status": "active"
+  }
+]

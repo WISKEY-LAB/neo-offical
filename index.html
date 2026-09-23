@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO OFFICIAL | Ultra Advanced Panel Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Floating Telegram Support Button (bantibhaiya style) */
+        .floating-telegram-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0088cc 0%, #229ED9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 18px rgba(0, 136, 204, 0.5);
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+        .floating-telegram-btn:hover {
+            transform: scale(1.12);
+            box-shadow: 0 6px 24px rgba(0, 136, 204, 0.7);
+        }
+        .floating-telegram-btn i {
+            font-size: 28px;
+            color: #ffffff;
+        }
+        .floating-telegram-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0088cc 0%, #229ED9 100%);
+            animation: pulse-telegram 2s infinite;
+            z-index: -1;
+        }
+        @keyframes pulse-telegram {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.28); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        :root {
+            --bg-body: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-accent: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            background: #000000;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 4px 12px;
+            width: 240px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 4px;
+        }
+
+        .action-icon-btn {
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .action-icon-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-icon-btn.listening {
+            background: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- FULL-COVER HERO SECTION (IMAGE BACKGROUND PURA COVER) --- */
+        .hero-banner {
+            width: 100%;
+            min-height: 420px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(15, 23, 42, 0.85) 100%), url('h.jpg') center/cover no-repeat;
+            border-bottom: 1px solid var(--border-color);
+            padding: 80px 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .hero-text {
+            max-width: 720px;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            line-height: 1.15;
+            margin-bottom: 14px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .hero-text p {
+            color: #cbd5e1;
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* --- MAIN SECTION --- */
+        .main-container {
+            padding: 36px 5%;
+        }
+
+        .section-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .filter-toggle-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-toggle-btn:hover {
+            background: #f1f5f9;
+        }
+
+        /* --- LARGER PRODUCT CARDS --- */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 28px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.12);
+            border-color: #cbd5e1;
+        }
+
+        .card-img-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .card-img-container img {
+            transform: scale(1.05);
+        }
+
+        .badge-overlay {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 2;
+        }
+
+        .badge-tag {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .badge-tag.cyan {
+            background: rgba(13, 148, 136, 0.92);
+            color: #ffffff;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(20, 184, 166, 0.5);
+        }
+
+        .badge-tag.purple {
+            background: rgba(79, 70, 229, 0.92);
+            color: #ffffff;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        .product-name {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .product-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            padding: 14px 18px;
+            background: #fafafa;
+        }
+
+        .price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            background: #000000;
+            color: #ffffff;
+            padding: 9px 16px;
+            border-radius: 6px;
+            border: 1px solid #000000;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1e293b;
+        }
+
+        .duration-selector-wrap {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .duration-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .duration-select {
+            width: 100%;
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            color: #0f172a;
+            transition: border-color 0.2s;
+        }
+
+        .duration-select:focus, .duration-select:hover {
+            border-color: #000000;
+        }
+
+        .price-unit {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid var(--border-color);
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* --- DRAWER FILTER MODAL --- */
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            backdrop-filter: blur(4px);
+        }
+
+        .drawer-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 290px;
+            height: 100%;
+            background: #ffffff;
+            z-index: 201;
+            padding: 24px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawer-overlay.active {
+            display: block;
+        }
+
+        .drawer-overlay.active .drawer-content {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-item {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .filter-item:hover,
+        .filter-item.active {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        /* --- CART DRAWER --- */
+        .cart-drawer-content {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 340px;
+            height: 100%;
+            background: #ffffff;
+            z-index: 201;
+            padding: 24px;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer-overlay.active-cart {
+            display: block;
+        }
+
+        .drawer-overlay.active-cart .cart-drawer-content {
+            transform: translateX(0);
+        }
+
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            margin: 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .cart-item-info h5 {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .cart-item-info p {
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .cart-remove-btn {
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        /* --- MODALS --- */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 500px;
+            padding: 24px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .feature-list {
+            margin: 12px 0;
+            padding-left: 18px;
+        }
+
+        .feature-list li {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #334155;
+        }
+
+        /* FIXED CLEAR QR CODE DISPLAY WITH PROVIDED PICS */
+        .qr-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .qr-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            background: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .qr-img-wrap {
+            width: 100%;
+            height: 180px;
+            background: #0f172a;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .qr-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #334155;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+        }
+
+        /* TOAST NOTIFICATION SYSTEM */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #000000;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* FOOTER DEALING */
+        footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 30px 5%;
+            margin-top: 50px;
+        }
+
+        .footer-deals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .deal-box {
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .deal-box h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .deal-box p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-copy {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .support-box {
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .support-box h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .support-box a {
+            display: block;
+            color: var(--text-main);
+            font-size: 12px;
+            margin-top: 5px;
+            text-decoration: none;
+        }
+
+        .support-box a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-actions {
+                justify-content: space-between;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .hero-banner {
+                min-height: 320px;
+                padding: 50px 5%;
+            }
+
+            .hero-text h1 {
+                font-size: 28px;
+            }
+
+            .qr-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast" id="toastBox">Message Toast</div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">NEO <span>OFFICIAL</span></div>
+        <div class="header-actions">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search panel..." onkeyup="renderProducts()">
+            </div>
+
+            <!-- MIC VOICE FILTER BUTTON -->
+            <button class="action-icon-btn" id="micBtn" onclick="toggleVoiceRecognition()" title="Voice Command">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="23" />
+                    <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+            </button>
+
+            <!-- RESELLER PORTAL BUTTON -->
+            <a class="action-icon-btn" href="reseller.html" target="_blank" title="Reseller Portal" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; text-decoration: none;">
+                <i class="fa-solid fa-handshake"></i>
+                Reseller
+            </a>
+
+            <!-- ADMIN LOGIN BUTTON -->
+            <button class="action-icon-btn" onclick="openAdminPanelAccess()" title="Admin Panel" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Admin
+            </button>
+
+            <!-- CART ICON BUTTON -->
+            <button class="action-icon-btn" onclick="toggleCartDrawer(true)" title="Shopping Cart">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="20" cy="21" r="1" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                <div class="cart-badge" id="cartBadge">0</div>
+            </button>
+        </div>
+    </header>
+
+    <!-- FULL BACKGROUND COVER HERO BANNER -->
+    <section class="hero-banner">
+        <div class="hero-text">
+            <h1>NEO OFFICIAL Gaming Store</h1>
+            <p>Experience high-grade Root, Non-Root, Streamer, and iOS Panels with automated instant key delivery setup.
+            </p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn" style="padding: 12px 24px; font-size: 13px;" onclick="toggleDrawer(true)">
+                    <i class="fa-solid fa-list-check"></i> Explore Categories
+                </button>
+                <button class="btn" style="padding: 12px 24px; font-size: 13px; background: #ffffff; color: #000000; border: 1px solid #000000;" onclick="document.getElementById('tutorialModal').style.display='flex'">
+                    <i class="fa-solid fa-circle-play" style="color: #ef4444;"></i> How To Buy & Setup
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN PRODUCTS DISPLAY -->
+    <div class="main-container">
+        <div class="section-bar">
+            <h2 style="font-size: 18px; font-weight: 800;" id="categoryTitle">All Products (7)</h2>
+            <button class="filter-toggle-btn" onclick="toggleDrawer(true)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="4" y1="21" x2="4" y2="14" />
+                    <line x1="4" y1="10" x2="4" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12" y2="3" />
+                    <line x1="20" y1="21" x2="20" y2="16" />
+                    <line x1="20" y1="12" x2="20" y2="3" />
+                    <line x1="1" y1="14" x2="7" y2="14" />
+                    <line x1="9" y1="8" x2="15" y2="8" />
+                    <line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+                Filter Categories
+            </button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products Loaded Dynamically -->
+        </div>
+    </div>
+
+    <!-- FILTER CATEGORY DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeAllDrawers()">
+        <div class="drawer-content" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <h3 style="font-size: 16px; font-weight: 800;">Select Category</h3>
+                <span style="font-size: 20px; cursor: pointer;" onclick="closeAllDrawers()">&times;</span>
+            </div>
+            <div class="filter-list">
+                <button class="filter-item active" onclick="selectCategory('all', 'All Products', this)">All
+                    Panels</button>
+                <button class="filter-item" onclick="selectCategory('crackpanel', 'Crackpanel', this)">Crackpanel</button>
+                <button class="filter-item" onclick="selectCategory('root panel', 'Root Panels', this)">Root
+                    Panel</button>
+                <button class="filter-item" onclick="selectCategory('non root panel', 'Non-Root Panels', this)">Non-Root
+                    Panel</button>
+                <button class="filter-item" onclick="selectCategory('ios panel', 'iOS Panels', this)">iOS Panel</button>
+            </div>
+        </div>
+
+        <!-- CART DRAWER -->
+        <div class="cart-drawer-content" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <h3 style="font-size: 16px; font-weight: 800;">Your Cart</h3>
+                <span style="font-size: 20px; cursor: pointer;" onclick="closeAllDrawers()">&times;</span>
+            </div>
+            <div class="cart-items-container" id="cartItemsContainer">
+                <!-- Cart items populate here -->
+            </div>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
+                <div
+                    style="display: flex; justify-content: space-between; font-weight: 800; font-size: 16px; margin-bottom: 12px;">
+                    <span>Total:</span>
+                    <span id="cartTotalPrice">$0</span>
+                </div>
+                <button class="btn" style="width: 100%;" onclick="proceedCartCheckout()">Checkout Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK VIEW MODAL -->
+    <div class="modal-bg" id="quickViewModal">
+        <div class="modal-card">
+            <span class="close-btn" onclick="closeModal('quickViewModal')">&times;</span>
+            <h3 id="qvTitle" style="font-size: 18px; font-weight: 800;">Product Title</h3>
+            <p id="qvDesc" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Description</p>
+
+            <div style="margin-top: 14px;">
+                <div style="font-size: 12px; font-weight: 700;">Features List:</div>
+                <ul class="feature-list" id="qvFeatures"></ul>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+                <div id="qvPrice" style="font-size: 18px; font-weight: 800;">$0</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-outline" id="qvCartBtn">Add to Cart</button>
+                    <button class="btn" id="qvBuyBtn">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLEAN ONLINE CHECKOUT -->
+    <div class="modal-bg" id="checkoutModal">
+        <div class="modal-card">
+            <span class="close-btn" onclick="closeModal('checkoutModal')">&times;</span>
+            <h3 style="font-size: 18px; font-weight: 800;">Checkout & Payment</h3>
+            <p id="checkoutProductTitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                Selected Items</p>
+
+            <div class="form-group">
+                <label>PAYMENT METHOD</label>
+                <select id="paymentMethod" class="duration-select">
+                    <option value="online">PhonePe Payment</option>
+                    <option value="crypto">Crypto Payment</option>
+                    <option value="manual">Contact Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="payerUpiId">YOUR UPI ID (FOR PAYMENT REQUEST)</label>
+                <input type="text" id="payerUpiId" placeholder="e.g. yourname@oksbi" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>DISCORD USERNAME / ID</label>
+                <input type="text" id="custDiscord" placeholder="e.g. Username#0000">
+            </div>
+
+            <div class="form-group">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" id="custEmail" placeholder="yourname@gmail.com">
+            </div>
+
+            <div class="form-group">
+                <label>WHATSAPP NUMBER</label>
+                <input type="text" id="custWhatsapp" placeholder="+92 300 0000000">
+            </div>
+
+            <button class="btn" id="submitOrderBtn" style="width: 100%; margin-top: 10px;"
+                onclick="confirmOrderWithWebhook()">Submit Order Deal</button>
+        </div>
+    </div>
+
+    <!-- FOOTER DEALING -->
+    <footer>
+        <div class="footer-deals">
+            <div class="deal-box">
+                <h4>100% Secure Dealing</h4>
+                <p>All deals verified via Discord and WhatsApp support directly.</p>
+            </div>
+            <div class="deal-box">
+                <h4>Instant Key Delivery</h4>
+                <p>Receive configuration key within 5-10 minutes after payment verification.</p>
+            </div>
+            <div class="deal-box">
+                <h4>24/7 Setup Assistance</h4>
+                <p>Full installation support for Root, Non-Root, and iOS panels.</p>
+            </div>
+            <div class="support-box">
+                <h4>NEO OFFICIAL Support</h4>
+                <a href="https://t.me/Mandeted999" target="_blank" rel="noopener noreferrer">Telegram: @Mandeted999</a>
+                <a href="https://discord.com/users/anujyadav3456" target="_blank" rel="noopener noreferrer">Discord: anujyadav3456</a>
+                <a href="https://discord.gg/ZeFd5qkkZ" target="_blank" rel="noopener noreferrer">Main Discord Channel</a>
+                <a href="https://t.me/neocheats9" target="_blank" rel="noopener noreferrer">Main Telegram Channel</a>
+                <a href="https://t.me/neocheatsfiles" target="_blank" rel="noopener noreferrer">Files Channel</a>
+                <a href="https://discord.gg/Tm6zYbm9R" target="_blank" rel="noopener noreferrer">Discord Files</a>
+                <a href="javascript:void(0)" onclick="openAdminPanelAccess()" style="font-weight:700; color:#000; margin-top:8px; display:inline-block; border-top:1px solid #eee; padding-top:6px;">🔐 Admin Dashboard Login</a>
+            </div>
+        </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div class="modal-bg" id="adminLoginModal">
+        <div class="modal-card" style="max-width: 400px;">
+            <span class="close-btn" onclick="closeModal('adminLoginModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 48px; height: 48px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5z"></path>
+                    </svg>
+                </div>
+                <h3 style="font-size: 18px; font-weight: 800;">Admin Dashboard Access</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Enter admin username & password to manage products and orders.</p>
+            </div>
+            <form id="adminModalLoginForm" onsubmit="handleAdminModalLogin(event)">
+                <div class="form-group">
+                    <label>ADMIN USERNAME</label>
+                    <input type="text" id="adminModalUser" placeholder="admin" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>ADMIN PASSWORD</label>
+                    <input type="password" id="adminModalPass" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn" id="adminModalSubmitBtn" style="width: 100%; margin-top: 10px;">Login to Admin Dashboard</button>
+            </form>
+    <!-- HOW TO BUY & SETUP TUTORIAL MODAL -->
+    <div class="modal-bg" id="tutorialModal">
+        <div class="modal-card" style="max-width: 520px;">
+            <span class="close-btn" onclick="closeModal('tutorialModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 18px;">
+                <h3 style="font-size: 20px; font-weight: 800;"><i class="fa-solid fa-graduation-cap"></i> How To Buy & Setup Panel</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Step by step guide for buying and activating your panel license key.</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">
+                    <strong style="color: #000; font-size: 13px;"><i class="fa-solid fa-1" style="color:#0088cc;"></i> Select Product & Plan</strong>
+                    <p style="font-size: 12px; color: #475569; margin-top: 4px;">Choose Non-Root, Root, Streamer, or iOS panel and select duration (1 Day, 7 Days, 30 Days).</p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">
+                    <strong style="color: #000; font-size: 13px;"><i class="fa-solid fa-2" style="color:#0088cc;"></i> Enter Customer Details & UPI ID</strong>
+                    <p style="font-size: 12px; color: #475569; margin-top: 4px;">Enter your Email, Phone Number, Discord, and UPI ID for payment processing.</p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">
+                    <strong style="color: #000; font-size: 13px;"><i class="fa-solid fa-3" style="color:#0088cc;"></i> Complete Payment & Get Key</strong>
+                    <p style="font-size: 12px; color: #475569; margin-top: 4px;">Approve payment on your PhonePe/UPI app. Your unique license key will be issued immediately!</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 18px;">
+                <a href="https://t.me/neocheatsvideos" target="_blank" class="btn" style="flex: 1; text-align: center; text-decoration: none; justify-content: center; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-brands fa-telegram"></i> Watch Video Channel
+                </a>
+                <button class="btn" style="background: #e2e8f0; color: #000;" onclick="closeModal('tutorialModal')">Got It!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING TELEGRAM SUPPORT BUTTON (BANTI BHAIYA STYLE) -->
+    <a href="https://t.me/Mandeted999" target="_blank" class="floating-telegram-btn" title="Contact Telegram Support">
+        <i class="fa-brands fa-telegram"></i>
+    </a>
+        <div class="footer-copy">
+            &copy; 2026 NEO OFFICIAL. All Rights Reserved. Clean White Edition.
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+        let products = [
+            {
+                id: 1,
+                name: "ABCD PANEL NON ROOT",
+                category: "non root panel",
+                image: "images/abcd_panel.png",
+                badges: ["NON-ROOT", "FREEFIRE"],
+                desc: "High performance non-root panel with ESP Champs & Silent Aim location tracking.",
+                features: ["ESP Champs", "AIMSILENT", "Location ESP", "100% Non-Root Safe"],
+                pricing: [
+                    { duration: "12 Hours", price: 25 },
+                    { duration: "1 Day", price: 45 },
+                    { duration: "3 Days", price: 120 },
+                    { duration: "7 Days", price: 200 }
+                ]
+            },
+            {
+                id: 2,
+                name: "Invisible X Kernel Panel Streamer",
+                category: "root panel",
+                image: "images/invisible_x.png",
+                badges: ["ROOTED KERNEL", "KERNEL VERSION"],
+                desc: "Kernel level rooted device panel with precision Aim Lock, Aimbot, and customizable FOV.",
+                features: ["AIMLOCK & AIMBOT", "AIMSILENT", "Angel FOV 0-180°", "Chest Rate 1-10", "ESP LOCATION"],
+                pricing: [
+                    { duration: "1 Day", price: 100 },
+                    { duration: "7 Days", price: 400 },
+                    { duration: "15 Days", price: 600 },
+                    { duration: "30 Days", price: 1000 }
+                ]
+            },
+            {
+                id: 3,
+                name: "Miguil iPhone iOS FF Panel",
+                category: "ios panel",
+                image: "images/miguel_ios.png",
+                badges: ["IOS / IPAD", "FREEFIRE"],
+                desc: "Exclusive iOS & iPad Free Fire panel featuring Silent Aim, Speed hack & Auto Fire.",
+                features: ["SILENT AIM", "AIMBOT", "SPEED", "AUTOFIRE", "HEADSHOT", "ESP ALL LOCATIONS"],
+                pricing: [
+                    { duration: "1 Day", price: 200 },
+                    { duration: "7 Days", price: 600 },
+                    { duration: "30 Days", price: 1100 }
+                ]
+            },
+            {
+                id: 4,
+                name: "Rapid Core Brutal Panel",
+                category: "mobile panel",
+                image: "images/rapid_core.png",
+                badges: ["BRUTAL", "STATUS: INJECTED"],
+                desc: "Brutal mode panel loaded with Spin Bot, Enemy Pull, Aim Magnet, and Headshot sliders.",
+                features: ["AIMBOT & AIMLOCK", "AIMSILENT & AIMMAGNET", "SPIN BOT", "ENEMY PULL", "Angle FOV 0-180°", "Headshot 0-10"],
+                pricing: [
+                    { duration: "1 Day", price: 50 },
+                    { duration: "7 Days", price: 250 },
+                    { duration: "14 Days", price: 350 },
+                    { duration: "30 Days", price: 600 }
+                ]
+            },
+            {
+                id: 5,
+                name: "Stricks BR Panel",
+                category: "root panel",
+                image: "images/stricks_br.png",
+                badges: ["ROOT", "FREEFIRE BR"],
+                desc: "Battle Royale panel overlay with Aim Magnet, FOV sliders, and Headshot rate tuning.",
+                features: ["Aim Silent & Aim Magnet", "Angle FOV Standard", "Headshot Rate Tuning", "Visuals & Exploits"],
+                pricing: [
+                    { duration: "1 Day", price: 60 },
+                    { duration: "7 Days", price: 280 },
+                    { duration: "30 Days", price: 650 }
+                ]
+            }
+        ];
+
+        let cart = [];
+        let selectedCategory = 'all';
+        let currentCheckoutDetails = { title: "", amount: 0 };
+        let selectedDurations = {}; // Store chosen index for each product ID
+
+        // Initialize default selected durations
+        products.forEach(p => {
+            selectedDurations[p.id] = 0;
+        });
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            products.forEach(p => {
+                const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchVal);
+
+                if (matchesCat && matchesSearch) {
+                    const activeIndex = selectedDurations[p.id] || 0;
+                    const activeTier = p.pricing[activeIndex] || p.pricing[0];
+
+                    let optionsHTML = p.pricing.map((tier, idx) => `
+                        <option value="${idx}" ${idx === activeIndex ? 'selected' : ''}>
+                            ${tier.duration} - ₹${tier.price}
+                        </option>
+                    `).join('');
+
+                    let stockCount = Array.isArray(p.keysPool) ? p.keysPool.length : 0;
+                    let stockBadge = stockCount > 0
+                        ? `<span class="badge-tag green" style="background:#28c76f; color:#ffffff; font-weight:800;">STOCK: ${stockCount} KEYS</span>`
+                        : `<span class="badge-tag cyan" style="background:#0f172a; color:#ffffff; font-weight:700;">INSTANT DELIVERY</span>`;
+
+                    let badgeHTML = p.badges.map(b => `<span class="badge-tag cyan">${b}</span>`).join(' ') + ' ' + stockBadge;
+
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <div class="card-img-container">
+                                <div class="badge-overlay">
+                                    ${badgeHTML}
+                                </div>
+                                <img src="${p.image}" alt="${p.name}" onerror="this.src='images/abcd_panel.png'">
+                            </div>
+                            <div class="card-body">
+                                <div class="product-name">${p.name}</div>
+                                <div class="product-desc">${p.desc}</div>
+                                <div class="duration-selector-wrap">
+                                    <label class="duration-label">Select Plan Duration</label>
+                                    <select class="duration-select" onchange="changeDuration(${p.id}, this.value)">
+                                        ${optionsHTML}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="price" id="cardPrice-${p.id}">₹${activeTier.price}<span class="price-unit">/${activeTier.duration}</span></div>
+                                <div class="card-actions">
+                                    <button class="btn-outline" onclick="addToCartWithPlan(${p.id})">+ Cart</button>
+                                    <button class="btn-outline" onclick="openQuickView(${p.id})">View</button>
+                                    <button class="btn" onclick="buyNowWithPlan(${p.id})">Buy</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        renderProducts();
+
+        fetch(`${API_BASE}/api/products`)
+            .then(response => response.ok ? response.json() : Promise.reject(new Error('Catalog unavailable')))
+            .then(serverProducts => {
+                products = serverProducts;
+                products.forEach(product => {
+                    if (typeof selectedDurations[product.id] === 'undefined') selectedDurations[product.id] = 0;
+                });
+                renderProducts();
+            })
+            .catch(error => console.error(error));
+
+        function changeDuration(productId, index) {
+            selectedDurations[productId] = parseInt(index);
+            const p = products.find(item => item.id === productId);
+            if (p) {
+                const tier = p.pricing[index];
+                const priceEl = document.getElementById(`cardPrice-${productId}`);
+                if (priceEl) {
+                    priceEl.innerHTML = `₹${tier.price}<span class="price-unit">/${tier.duration}</span>`;
+                }
+            }
+        }
+
+        function addToCartWithPlan(productId) {
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            const idx = selectedDurations[productId] || 0;
+            const tier = p.pricing[idx] || p.pricing[0];
+            const cartItem = {
+                id: p.id,
+                name: `${p.name} (${tier.duration})`,
+                price: tier.price,
+                image: p.image
+            };
+
+            cart.push(cartItem);
+            updateCartUI();
+            showToast(`Added "${cartItem.name}" to cart`);
+        }
+
+        function buyNowWithPlan(productId) {
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            const idx = selectedDurations[productId] || 0;
+            const tier = p.pricing[idx] || p.pricing[0];
+            openCheckout(`${p.name} - ${tier.duration}`, tier.price);
+        }
+
+        /* --- CART LOGIC --- */
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartBadge').innerText = cart.length;
+            const container = document.getElementById('cartItemsContainer');
+            container.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color: var(--text-muted); margin-top: 20px;">Your cart is empty.</p>`;
+            } else {
+                cart.forEach((item, idx) => {
+                    total += item.price;
+                    container.innerHTML += `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <h5>${item.name}</h5>
+                                <p>₹${item.price}</p>
+                            </div>
+                            <button class="cart-remove-btn" onclick="removeFromCart(${idx})">&times;</button>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('cartTotalPrice').innerText = `₹${total}`;
+        }
+
+        function proceedCartCheckout() {
+            if (cart.length === 0) {
+                showToast("Your cart is empty!");
+                return;
+            }
+            const names = cart.map(i => i.name).join(", ");
+            const total = cart.reduce((acc, i) => acc + i.price, 0);
+            closeAllDrawers();
+            openCheckout(`Cart Order (${cart.length} Items): ${names}`, total);
+        }
+
+        function toggleDrawer(show) {
+            const drawer = document.getElementById('drawerOverlay');
+            if (show) {
+                drawer.classList.remove('active-cart');
+                drawer.classList.add('active');
+            } else drawer.classList.remove('active');
+        }
+
+        function toggleCartDrawer(show) {
+            const drawer = document.getElementById('drawerOverlay');
+            if (show) {
+                drawer.classList.remove('active');
+                drawer.classList.add('active-cart');
+            } else drawer.classList.remove('active-cart');
+        }
+
+        function closeAllDrawers() {
+            const drawer = document.getElementById('drawerOverlay');
+            drawer.classList.remove('active', 'active-cart');
+        }
+
+        function selectCategory(cat, title, btn) {
+            selectedCategory = cat;
+            document.getElementById('categoryTitle').innerText = title;
+            document.querySelectorAll('.filter-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            closeAllDrawers();
+            renderProducts();
+        }
+
+        function openQuickView(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            const idx = selectedDurations[id] || 0;
+            const tier = p.pricing[idx] || p.pricing[0];
+
+            document.getElementById('qvTitle').innerText = p.name;
+            document.getElementById('qvDesc').innerText = p.desc;
+            document.getElementById('qvPrice').innerText = `₹${tier.price} (${tier.duration})`;
+
+            const list = document.getElementById('qvFeatures');
+            list.innerHTML = '';
+            p.features.forEach(f => {
+                list.innerHTML += `<li>✔ ${f}</li>`;
+            });
+
+            document.getElementById('qvCartBtn').onclick = () => {
+                addToCartWithPlan(p.id);
+            };
+
+            document.getElementById('qvBuyBtn').onclick = () => {
+                closeModal('quickViewModal');
+                buyNowWithPlan(p.id);
+            };
+
+            document.getElementById('quickViewModal').style.display = 'flex';
+        }
+
+        function openCheckout(title, amount) {
+            currentCheckoutDetails = { title, amount };
+            document.getElementById('checkoutProductTitle').innerText = `Item: ${title} | Total: ₹${amount}`;
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        /* --- ADMIN DASHBOARD ACCESS & LOGIN --- */
+        function openAdminPanelAccess() {
+            document.getElementById('adminModalUser').value = '';
+            document.getElementById('adminModalPass').value = '';
+            document.getElementById('adminLoginModal').style.display = 'flex';
+        }
+
+        async function handleAdminModalLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminModalUser').value.trim();
+            const password = document.getElementById('adminModalPass').value.trim();
+            const submitBtn = document.getElementById('adminModalSubmitBtn');
+
+            submitBtn.innerText = "Logging in...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('neo_admin_session', JSON.stringify({ username, password }));
+                    showToast("Login Successful! Opening Admin Dashboard...");
+                    closeModal('adminLoginModal');
+                    setTimeout(() => {
+                        window.location.href = `${API_BASE}/dashboard.html`;
+                    }, 600);
+                } else {
+                    showToast(data.message || "Invalid Username or Password!");
+                }
+            } catch (err) {
+                showToast("Server se connection nahi ho raha. Ensure localhost:3000 is running.");
+            } finally {
+                submitBtn.innerText = "Login to Admin Dashboard";
+                submitBtn.disabled = false;
+            }
+        }
+
+        /* --- SAVE ORDER IN THE SHARED BACKEND --- */
+        async function confirmOrderWithWebhook() {
+            const discord = document.getElementById('custDiscord').value.trim();
+            const email = document.getElementById('custEmail').value.trim();
+            const phone = document.getElementById('custWhatsapp').value.trim();
+            const payerUpiId = document.getElementById('payerUpiId').value.trim();
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const submitBtn = document.getElementById('submitOrderBtn');
+
+            if (!discord || !email || !phone) {
+                showToast("Please fill all customer details first!");
+                return;
+            }
+
+            if (paymentMethod === 'online' && !/^[\w.-]{2,}@[\w.-]{2,}$/.test(payerUpiId)) {
+                showToast("Please enter a valid UPI ID for the payment request.");
+                return;
+            }
+
+            submitBtn.innerText = "Sending Order...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}${paymentMethod === 'online' ? '/api/payments/phonepe' : '/api/orders'}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productName: currentCheckoutDetails.title,
+                        total: currentCheckoutDetails.amount,
+                        customer: discord || email,
+                        email,
+                        phone,
+                        discord,
+                        payerUpiId,
+                        paymentMethod,
+                        status: 'pending'
+                    })
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    if (paymentMethod === 'online' && result.redirectUrl) {
+                        window.location.href = result.redirectUrl;
+                        return;
+                    }
+                    showToast("Order Submitted Successfully!");
+                    cart = [];
+                    updateCartUI();
+                    closeModal('checkoutModal');
+                    window.location.href = `${API_BASE}${result.downloadUrl}`;
+                } else {
+                    showToast(result.message || "Order failed. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Server se connection nahi ho raha. Website localhost:3000 se kholo.");
+            } finally {
+                submitBtn.innerText = "Submit Order Deal";
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastBox');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        /* --- FIXED SPEECH RECOGNITION WITH DIRECT CHECKOUT --- */
+        let recognition = null;
+        let isListening = false;
+
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRec();
+            recognition.lang = 'en-US';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const speech = event.results[0][0].transcript.toLowerCase().trim();
+                stopListeningState();
+
+                let matched = products.find(p =>
+                    speech.includes(p.name.toLowerCase()) ||
+                    speech.includes(p.category.toLowerCase()) ||
+                    p.name.toLowerCase().includes(speech)
+                );
+
+                if (!matched) {
+                    if (speech.includes("abcd") || speech.includes("non root")) matched = products[0];
+                    else if (speech.includes("invisible") || speech.includes("kernel")) matched = products[1];
+                    else if (speech.includes("miguel") || speech.includes("ios") || speech.includes("iphone")) matched = products[2];
+                    else if (speech.includes("rapid") || speech.includes("brutal")) matched = products[3];
+                    else if (speech.includes("stricks")) matched = products[4];
+                }
+
+                if (matched) {
+                    buyNowWithPlan(matched.id);
+                    showToast(`Voice Command: ${matched.name}`);
+                } else {
+                    showToast(`Heard: "${speech}". Speak panel keywords.`);
+                }
+            };
+
+            recognition.onerror = () => stopListeningState();
+            recognition.onend = () => stopListeningState();
+        }
+
+        function toggleVoiceRecognition() {
+            if (!recognition) {
+                showToast("Speech recognition unavailable in browser.");
+                return;
+            }
+
+            const btn = document.getElementById('micBtn');
+
+            if (isListening) {
+                recognition.stop();
+                stopListeningState();
+            } else {
+                try {
+                    recognition.start();
+                    isListening = true;
+                    btn.classList.add('listening');
+                    showToast("Listening for Panel Voice Command...");
+                } catch (e) { stopListeningState(); }
+            }
+        }
+
+        function stopListeningState() {
+            isListening = false;
+            const btn = document.getElementById('micBtn');
+            if (btn) btn.classList.remove('listening');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+# Environment variables (SECURITY SECRET)
+.env
+.env.local
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Temporary files & logs
+*.log
+scratch/

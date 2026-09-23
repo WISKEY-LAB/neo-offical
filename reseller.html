@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEO | Reseller Wallet & Key Generator Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #07090e;
+      --card-bg: #0f172a;
+      --card-border: #1e293b;
+      --accent-cyan: #00f2fe;
+      --accent-green: #28c76f;
+      --accent-purple: #7367f0;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; font-size: 14px; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 50px; }
+    
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 30px; flex-wrap: wrap; }
+    .brand { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+    .brand span { background: var(--accent-purple); color: #fff; padding: 3px 10px; border-radius: 6px; font-size: 12px; margin-left: 8px; font-weight: 800; }
+    
+    .user-info { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .balance-pill { background: rgba(40, 199, 111, 0.15); border: 1.5px solid var(--accent-green); color: var(--accent-green); padding: 8px 16px; border-radius: 30px; font-weight: 800; font-size: 14px; box-shadow: 0 0 15px rgba(40, 199, 111, 0.2); }
+    .cat-badge { background: rgba(0, 242, 254, 0.15); border: 1.5px solid var(--accent-cyan); color: var(--accent-cyan); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    .logout-btn { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+    .logout-btn:hover { background: #ef4444; color: #fff; }
+
+    .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px; }
+    @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card h3 { font-size: 18px; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control { width: 100%; background: #07090e; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    .form-control:focus { border-color: var(--accent-cyan); }
+
+    .btn-generate { width: 100%; background: linear-gradient(135deg, var(--accent-purple), #5b4edb); color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 20px rgba(115, 103, 240, 0.4); transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(115, 103, 240, 0.6); }
+
+    .result-box { display: none; background: #050505; border: 2px dashed var(--accent-green); border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px; animation: fadeIn 0.4s ease; }
+    .result-key { font-family: monospace; font-size: 22px; font-weight: 900; color: var(--accent-green); letter-spacing: 1px; word-break: break-all; margin: 10px 0; }
+    .btn-copy { background: var(--accent-green); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 8px; transition: transform 0.2s; }
+    .btn-copy:hover { transform: scale(1.05); }
+
+    .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .history-table th, .history-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--card-border); font-size: 13px; }
+    .history-table th { color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 800; }
+    .history-key { font-family: monospace; color: var(--accent-cyan); font-weight: 700; cursor: pointer; }
+
+    /* Login Modal */
+    .login-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.92); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-card { background: var(--card-bg); border: 2px solid var(--accent-purple); border-radius: 20px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 0 40px rgba(115, 103, 240, 0.3); }
+
+    /* Toast */
+    #toast { visibility: hidden; min-width: 250px; background: var(--accent-green); color: #000; text-align: center; border-radius: 50px; padding: 12px 24px; position: fixed; z-index: 999999; left: 50%; top: 30px; transform: translateX(-50%); font-weight: 900; box-shadow: 0 0 20px rgba(40,199,111,0.6); opacity: 0; transition: 0.3s; }
+    #toast.show { visibility: visible; opacity: 1; top: 40px; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <div id="toast">>> KEY COPIED AUTOMATICALLY <<</div>
+
+  <!-- LOGIN OVERLAY -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="width: 50px; height: 50px; background: var(--accent-purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: #fff; font-size: 22px;">
+          <i class="fa-solid fa-handshake"></i>
+        </div>
+        <h2 style="font-size: 22px; font-weight: 900;">Reseller Login</h2>
+        <p style="color: var(--muted); font-size: 12px; margin-top: 4px;">Sign in to access your reseller wallet & key generator</p>
+      </div>
+      <form id="resellerLoginForm">
+        <div class="form-group">
+          <label>RESELLER USERNAME</label>
+          <input type="text" id="resUsername" class="form-control" placeholder="Enter username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label>PASSWORD</label>
+          <input type="password" id="resPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-generate" style="margin-top: 20px;">
+          <i class="fa-solid fa-right-to-bracket"></i> Login to Reseller Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN RESELLER DASHBOARD -->
+  <div class="wrap" id="mainWrap" style="display: none;">
+    <div class="topbar">
+      <div class="brand">NEO <span>RESELLER PORTAL</span></div>
+      <div class="user-info">
+        <div class="cat-badge" id="resCategoryBadge">Allowed: All Panels</div>
+        <div class="balance-pill"><i class="fa-solid fa-wallet"></i> Wallet: <span id="resWalletBalance">₹0</span></div>
+        <button class="logout-btn" onclick="logoutReseller()"><i class="fa-solid fa-power-off"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="grid-layout">
+      <!-- GENERATE KEY CARD -->
+      <div class="card">
+        <h3><i class="fa-solid fa-key"></i> Key Generation Studio</h3>
+        <form id="generateKeyForm">
+          <div class="form-group">
+            <label>Select Product / Panel</label>
+            <select id="resProductSelect" class="form-control" required onchange="updatePricePreview()"></select>
+          </div>
+          <div class="form-group">
+            <label>Select Duration</label>
+            <select id="resDurationSelect" class="form-control" required onchange="updatePricePreview()"></select>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--muted); font-weight: 700;">Price Deducted:</span>
+            <strong style="color: var(--accent-green); font-size: 20px;" id="pricePreview">₹0</strong>
+          </div>
+          <button type="submit" class="btn-generate" id="genBtn">
+            <i class="fa-solid fa-bolt"></i> Generate Key Now
+          </button>
+        </form>
+
+        <div class="result-box" id="resultBox">
+          <div style="color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase;">Generated License Key</div>
+          <div class="result-key" id="issuedKeyDisplay">NEO-XXXX-XXXX</div>
+          <button class="btn-copy" onclick="copyIssuedKey()"><i class="fa-solid fa-copy"></i> Copy License Key</button>
+        </div>
+      </div>
+
+      <!-- RESELLER INFO CARD -->
+      <div class="card">
+        <h3><i class="fa-solid fa-shield-halved"></i> Partner Account Details</h3>
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">
+            <span style="color: var(--muted);">Reseller Name:</span>
+            <strong id="resNameDisplay" style="color: #fff;">-</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">
+            <span style="color: var(--muted);">Username:</span>
+            <strong id="resUserDisplay" style="color: var(--accent-cyan); font-family: monospace;">-</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--card-border); padding-bottom: 10px;">
+            <span style="color: var(--muted);">Category Access:</span>
+            <strong id="resCategoryDisplay" style="color: var(--accent-purple); text-transform: uppercase;">-</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 10px;">
+            <span style="color: var(--muted);">Account Status:</span>
+            <strong style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> ACTIVE</strong>
+          </div>
+        </div>
+        <div style="background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 8px; padding: 12px; margin-top: 18px; font-size: 12px; color: var(--muted); line-height: 1.5;">
+          <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Need more wallet balance? Contact Admin to recharge your reseller wallet balance.
+        </div>
+      </div>
+    </div>
+
+    <!-- KEY GENERATION HISTORY LOG -->
+    <div class="card">
+      <h3><i class="fa-solid fa-clock-rotate-left"></i> Key Generation History</h3>
+      <div style="overflow-x: auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Product Name</th>
+              <th>Duration</th>
+              <th>Price</th>
+              <th>Issued Key</th>
+            </tr>
+          </thead>
+          <tbody id="historyTbody">
+            <tr><td colspan="5" style="color: var(--muted); text-align: center;">Loading history...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    const RES_AUTH_KEY = 'neo_reseller_auth';
+    let authReseller = null;
+    let availableProducts = [];
+
+    function getAuthHeader() {
+      if (!authReseller) return {};
+      const token = btoa(`${authReseller.username}:${authReseller.password}`);
+      return { 'Authorization': `Basic ${token}` };
+    }
+
+    function saveAuth(username, password) {
+      authReseller = { username, password };
+      localStorage.setItem(RES_AUTH_KEY, JSON.stringify(authReseller));
+    }
+
+    function loadSavedAuth() {
+      const raw = localStorage.getItem(RES_AUTH_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    async function initResellerPortal() {
+      authReseller = loadSavedAuth();
+      if (!authReseller) {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('mainWrap').style.display = 'none';
+        return;
+      }
+
+      try {
+        const profileRes = await fetch(`${API_BASE}/api/reseller/profile`, { headers: getAuthHeader() });
+        const profileData = await profileRes.json();
+
+        if (!profileRes.ok || !profileData.success) {
+          localStorage.removeItem(RES_AUTH_KEY);
+          authReseller = null;
+          document.getElementById('loginOverlay').style.display = 'flex';
+          document.getElementById('mainWrap').style.display = 'none';
+          showToast(profileData.message || "Session expired. Please login again.");
+          return;
+        }
+
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainWrap').style.display = 'block';
+        renderProfile(profileData.reseller);
+        await loadProducts(profileData.reseller);
+        await loadHistory();
+      } catch (err) {
+        console.error(err);
+        showToast("Server connection failed. Ensure server is running.");
+      }
+    }
+
+    function renderProfile(reseller) {
+      document.getElementById('resWalletBalance').textContent = `₹${reseller.balance}`;
+      document.getElementById('resNameDisplay').textContent = reseller.name || reseller.username;
+      document.getElementById('resUserDisplay').textContent = reseller.username;
+      
+      const allowed = String(reseller.allowedCategory || 'all').toUpperCase();
+      document.getElementById('resCategoryBadge').textContent = `Allowed: ${allowed === 'ALL' ? 'ALL PANELS' : allowed + ' ONLY'}`;
+      document.getElementById('resCategoryDisplay').textContent = allowed === 'ALL' ? 'ALL PANELS' : allowed + ' ONLY';
+    }
+
+    async function loadProducts(reseller) {
+      const res = await fetch(`${API_BASE}/api/products`);
+      let products = await res.json();
+      
+      const allowedCat = String(reseller.allowedCategory || 'all').toLowerCase();
+      if (allowedCat !== 'all') {
+        products = products.filter(p => String(p.category || '').toLowerCase() === allowedCat);
+      }
+
+      availableProducts = products;
+      const select = document.getElementById('resProductSelect');
+      select.innerHTML = '';
+
+      if (!products.length) {
+        select.innerHTML = `<option value="">No products available for '${allowedCat}' category</option>`;
+        document.getElementById('resDurationSelect').innerHTML = '';
+        document.getElementById('pricePreview').textContent = '₹0';
+        return;
+      }
+
+      products.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = `${p.name} (${String(p.category || '').toUpperCase()})`;
+        select.appendChild(option);
+      });
+
+      updateDurationOptions();
+    }
+
+    function updateDurationOptions() {
+      const productId = Number(document.getElementById('resProductSelect').value);
+      const product = availableProducts.find(p => Number(p.id) === productId);
+      const durationSelect = document.getElementById('resDurationSelect');
+      durationSelect.innerHTML = '';
+
+      if (!product || !product.pricing || !product.pricing.length) {
+        durationSelect.innerHTML = '<option value="0">Default Plan - ₹100</option>';
+        updatePricePreview();
+        return;
+      }
+
+      product.pricing.forEach((tier, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${tier.duration} - ₹${tier.price}`;
+        durationSelect.appendChild(option);
+      });
+
+      updatePricePreview();
+    }
+
+    function updatePricePreview() {
+      const productId = Number(document.getElementById('resProductSelect').value);
+      const durationIndex = Number(document.getElementById('resDurationSelect').value || 0);
+      const product = availableProducts.find(p => Number(p.id) === productId);
+
+      if (!product || !product.pricing || !product.pricing[durationIndex]) {
+        document.getElementById('pricePreview').textContent = '₹0';
+        return;
+      }
+
+      document.getElementById('pricePreview').textContent = `₹${product.pricing[durationIndex].price}`;
+    }
+
+    async function loadHistory() {
+      const res = await fetch(`${API_BASE}/api/reseller/history`, { headers: getAuthHeader() });
+      if (!res.ok) return;
+      const history = await res.json();
+      const tbody = document.getElementById('historyTbody');
+      tbody.innerHTML = '';
+
+      if (!history.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--muted); text-align: center;">No keys generated yet.</td></tr>';
+        return;
+      }
+
+      history.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${new Date(item.generatedAt).toLocaleString()}</td>
+          <td><strong>${item.productName}</strong></td>
+          <td>${item.duration}</td>
+          <td style="color: var(--accent-green); font-weight:800;">₹${item.price}</td>
+          <td><span class="history-key" onclick="copyText('${item.key}')"><i class="fa-solid fa-copy"></i> ${item.key}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    document.getElementById('generateKeyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const productId = Number(document.getElementById('resProductSelect').value);
+      const durationIndex = Number(document.getElementById('resDurationSelect').value || 0);
+      const genBtn = document.getElementById('genBtn');
+
+      if (!productId) return;
+
+      genBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating Key...';
+      genBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/reseller/generate-key`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify({ productId, durationIndex })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          document.getElementById('issuedKeyDisplay').textContent = data.key;
+          document.getElementById('resultBox').style.display = 'block';
+          document.getElementById('resWalletBalance').textContent = `₹${data.newBalance}`;
+          showToast(">> KEY GENERATED & WALLET DEDUCTED <<");
+          await loadHistory();
+        } else {
+          showToast(data.message || "Key generation failed!");
+        }
+      } catch (err) {
+        showToast("Server connection error!");
+      } finally {
+        genBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Generate Key Now';
+        genBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('resellerLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('resUsername').value.trim();
+      const password = document.getElementById('resPassword').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/reseller/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          saveAuth(username, password);
+          showToast("Reseller Login Successful!");
+          initResellerPortal();
+        } else {
+          showToast(data.message || "Invalid credentials");
+        }
+      } catch (err) {
+        showToast("Connection failed!");
+      }
+    });
+
+    function logoutReseller() {
+      localStorage.removeItem(RES_AUTH_KEY);
+      authReseller = null;
+      document.getElementById('loginOverlay').style.display = 'flex';
+      document.getElementById('mainWrap').style.display = 'none';
+    }
+
+    function copyIssuedKey() {
+      const key = document.getElementById('issuedKeyDisplay').textContent.trim();
+      copyText(key);
+    }
+
+    function copyText(text) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(">> KEY COPIED AUTOMATICALLY <<");
+      }).catch(() => {
+        showToast(`Copied: ${text}`);
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
+
+    initResellerPortal();
+  </script>
+</body>
+</html>

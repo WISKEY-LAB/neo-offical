@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "name": "ABCD PANEL NON ROOT",
+    "category": "non root panel",
+    "image": "images/abcd_panel.png",
+    "badges": [
+      "NON-ROOT",
+      "FREEFIRE"
+    ],
+    "desc": "High performance non-root panel with ESP Champs & Silent Aim location tracking.",
+    "features": [
+      "ESP Champs",
+      "AIMSILENT",
+      "Location ESP",
+      "100% Non-Root Safe"
+    ],
+    "pricing": [
+      {
+        "duration": "12 Hours",
+        "price": 25
+      },
+      {
+        "duration": "1 Day",
+        "price": 45
+      },
+      {
+        "duration": "3 Days",
+        "price": 120
+      },
+      {
+        "duration": "7 Days",
+        "price": 200
+      }
+    ],
+    "keysPool": [
+      "ABCD-VIP-KEY-88220",
+      "ABCD-VIP-KEY-88221"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Invisible X Kernel Panel Streamer",
+    "category": "root panel",
+    "image": "images/invisible_x.png",
+    "badges": [
+      "ROOTED KERNEL",
+      "KERNEL VERSION"
+    ],
+    "desc": "Kernel level rooted device panel with precision Aim Lock, Aimbot, and customizable FOV.",
+    "features": [
+      "AIMLOCK & AIMBOT",
+      "AIMSILENT",
+      "Angel FOV 0-180°",
+      "Chest Rate 1-10",
+      "ESP LOCATION"
+    ],
+    "pricing": [
+      {
+        "duration": "1 Day",
+        "price": 100
+      },
+      {
+        "duration": "7 Days",
+        "price": 400
+      },
+      {
+        "duration": "15 Days",
+        "price": 600
+      },
+      {
+        "duration": "30 Days",
+        "price": 1000
+      }
+    ],
+    "keysPool": [
+      "INVIS-KERNEL-PRO-9001",
+      "INVIS-KERNEL-PRO-9002"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Miguil iPhone iOS FF Panel",
+    "category": "ios panel",
+    "image": "images/miguel_ios.png",
+    "badges": [
+      "IOS / IPAD",
+      "FREEFIRE"
+    ],
+    "desc": "Exclusive iOS & iPad Free Fire panel featuring Silent Aim, Speed hack & Auto Fire.",
+    "features": [
+      "SILENT AIM",
+      "AIMBOT",
+      "SPEED",
+      "AUTOFIRE",
+      "HEADSHOT",
+      "ESP ALL LOCATIONS"
+    ],
+    "pricing": [
+      {
+        "duration": "1 Day",
+        "price": 200
+      },
+      {
+        "duration": "7 Days",
+        "price": 600
+      },
+      {
+        "duration": "30 Days",
+        "price": 1100
+      }
+    ],
+    "keysPool": [
+      "MIGUEL-IOS-KEY-771",
+      "MIGUEL-IOS-KEY-772"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Rapid Core Brutal Panel",
+    "category": "root panel",
+    "image": "images/rapid_core.png",
+    "badges": [
+      "BRUTAL",
+      "STATUS: INJECTED"
+    ],
+    "desc": "Brutal mode panel loaded with Spin Bot, Enemy Pull, Aim Magnet, and Headshot sliders.",
+    "features": [
+      "AIMBOT & AIMLOCK",
+      "AIMSILENT & AIMMAGNET",
+      "SPIN BOT",
+      "ENEMY PULL",
+      "Angle FOV 0-180°",
+      "Headshot 0-10"
+    ],
+    "pricing": [
+      {
+        "duration": "1 Day",
+        "price": 50
+      },
+      {
+        "duration": "7 Days",
+        "price": 250
+      },
+      {
+        "duration": "14 Days",
+        "price": 350
+      },
+      {
+        "duration": "30 Days",
+        "price": 600
+      }
+    ],
+    "keysPool": [
+      "RAPID-BRUTAL-KEY-301",
+      "RAPID-BRUTAL-KEY-302"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Stricks BR Panel",
+    "category": "root panel",
+    "image": "images/stricks_br.png",
+    "badges": [
+      "ROOT",
+      "FREEFIRE BR"
+    ],
+    "desc": "Battle Royale panel overlay with Aim Magnet, FOV sliders, and Headshot rate tuning.",
+    "features": [
+      "Aim Silent & Aim Magnet",
+      "Angle FOV Standard",
+      "Headshot Rate Tuning",
+      "Visuals & Exploits"
+    ],
+    "pricing": [
+      {
+        "duration": "1 Day",
+        "price": 60
+      },
+      {
+        "duration": "7 Days",
+        "price": 280
+      },
+      {
+        "duration": "30 Days",
+        "price": 650
+      }
+    ],
+    "keysPool": [
+      "STRICKS-BR-KEY-501",
+      "STRICKS-BR-KEY-502"
+    ]
+  },
+  {
+    "id": 1790188095333,
+    "name": "xyz",
+    "category": "non root panel",
+    "image": "images/abcd_panel.png",
+    "badges": [
+      "NEW"
+    ],
+    "desc": "digwigbib",
+    "features": [
+      "Instant Delivery"
+    ],
+    "pricing": [
+      {
+        "duration": "1 Day",
+        "price": 150
+      },
+      {
+        "duration": "7 Days",
+        "price": 500
+      },
+      {
+        "duration": "30 Days",
+        "price": 1200
+      }
+    ],
+    "keysPool": []
+  }
+]

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Dashboard</title>
+  <style>
+    :root { --bg: #f4f4f1; --panel: #ffffff; --soft: #eeeeea; --line: #d8d8d2; --text: #111111; --muted: #696963; --accent: #111111; --accent-2: #2d2d2a; --danger: #a92828; --blue: #555550; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: linear-gradient(135deg,#f8f8f5,#ededeb); color: var(--text); min-height: 100vh; }
+    .wrap { max-width: 1320px; margin: 0 auto; padding: 34px 24px 70px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .brand { font-size: 30px; font-weight: 800; letter-spacing: .08em; }
+    .brand span { color: #fff; background: #111; padding: 5px 8px; font-size: 12px; letter-spacing: .16em; margin-left: 8px; }
+    .nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .button, button { border: 0; border-radius: 10px; cursor: pointer; font-weight: 700; transition: transform .15s ease, opacity .15s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .button:hover, button:hover { transform: translateY(-1px); }
+    .button.primary { background: #111; color: #fff; padding: 12px 18px; }
+    .button.secondary { background: #fff; color: var(--text); border: 1px solid var(--line); padding: 12px 18px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .stat { background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 22px; box-shadow: 0 12px 28px rgba(0,0,0,.06); position: relative; overflow: hidden; animation: rise .55s ease both; }
+    .stat::after { content: ''; position: absolute; width: 80px; height: 80px; border: 1px solid #deded8; border-radius: 50%; right: -25px; top: -30px; }
+    .stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+    .stat .value { font-size: 32px; font-weight: 800; margin-top: 8px; color: #111; }
+    .panel { background: rgba(255,255,255,.88); border: 1px solid var(--line); border-radius: 4px; padding: 22px; box-shadow: 0 12px 28px rgba(0,0,0,.06); animation: rise .55s ease both; }
+    .panel h3 { margin: 0 0 18px; font-size: 21px; letter-spacing: .02em; }
+    .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 22px; }
+    form { display: grid; gap: 12px; }
+    label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+    input, select, textarea { width: 100%; background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: 12px 13px; color: var(--text); font-size: 14px; }
+    textarea { min-height: 100px; resize: vertical; }
+    .quick-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .product-list { margin-top: 18px; display: grid; gap: 12px; }
+    .product-item { display: grid; grid-template-columns: 1.5fr .7fr auto; gap: 10px; align-items: center; padding: 14px; background: #fafaf8; border: 1px solid var(--line); border-radius: 4px; }
+    .product-item strong { display: block; margin-bottom: 4px; }
+    .product-item small { color: var(--muted); }
+    .actions { display: flex; gap: 8px; }
+    .mini { padding: 8px 10px; font-size: 12px; }
+    .danger { background: rgba(255,107,107,.12); color: #ffc2c2; border: 1px solid rgba(255,107,107,.35); }
+    .success { background: rgba(61,217,179,.12); color: #baf5e8; border: 1px solid rgba(61,217,179,.35); }
+    .login-box { display: none; max-width: 420px; margin: 60px auto; background: rgba(17,24,39,.8); border: 1px solid var(--line); border-radius: 20px; padding: 28px; box-shadow: 0 10px 25px rgba(15,23,42,.18); }
+    .login-box h2 { margin: 0 0 18px; font-size: 26px; }
+    .hidden { display: none !important; }
+    .orders-panel { margin-top: 22px; }
+    .order-list { display: grid; gap: 12px; }
+    .order-item { display: grid; grid-template-columns: 1.3fr 1fr 1fr auto; gap: 14px; align-items: center; padding: 14px; background: #fafaf8; border: 1px solid var(--line); border-radius: 4px; }
+    .order-item strong { display: block; margin-bottom: 4px; }
+    .order-item small { color: var(--muted); display: block; line-height: 1.5; }
+    .order-key { color: #111; font-weight: 800; letter-spacing: .04em; word-break: break-word; }
+    .status { color: #333; text-transform: uppercase; font-size: 11px; font-weight: 800; }
+    .status-select { margin-top: 7px; width: 100%; max-width: 150px; padding: 6px 8px; border-radius: 4px; border: 1px solid var(--line); background: #fff; color: var(--text); font-size: 11px; }
+    .analytics-grid { display: grid; grid-template-columns: 1.35fr .65fr; gap: 22px; margin: 22px 0; }
+    .chart { min-height: 220px; display: flex; align-items: end; gap: 12px; padding: 20px 8px 8px; border-top: 1px solid var(--line); }
+    .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 30px; }
+    .bar { width: 100%; max-width: 44px; min-height: 8px; background: linear-gradient(180deg, #111, #777); border-radius: 3px 3px 0 0; animation: grow .7s ease both; }
+    .bar-label, .bar-value { color: var(--muted); font-size: 11px; }
+    .metric-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .metric-row:last-child { border-bottom: 0; }
+    .metric-row strong { color: #111; }
+    .status-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pill { border: 1px solid #111; padding: 8px 12px; border-radius: 999px; font-size: 12px; color: #111; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes grow { from { transform: scaleY(0); transform-origin: bottom; } to { transform: scaleY(1); transform-origin: bottom; } }
+    @media (max-width:720px){ .order-item { grid-template-columns: 1fr; } }
+    @media (max-width:900px){ .analytics-grid { grid-template-columns: 1fr; } }
+    @media (max-width:720px){ .two-col { grid-template-columns: 1fr; } .quick-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="dashboardScreen">
+    <div class="topbar">
+      <div class="brand">NEO <span>ADMIN</span></div>
+      <div class="nav">
+        <a class="button secondary" href="index.html">Store Front</a>
+        <a class="button secondary" href="reseller.html" target="_blank">Reseller Portal</a>
+        <a class="button primary" href="crackpanel.html">Crackpanel Studio</a>
+        <button class="button secondary" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="stat"><div class="label">Total Panels</div><div class="value" id="totalPanels">0</div></div>
+      <div class="stat"><div class="label">Categories</div><div class="value" id="totalCategories">0</div></div>
+      <div class="stat"><div class="label">Orders</div><div class="value" id="totalOrders">0</div></div>
+      <div class="stat"><div class="label">Revenue</div><div class="value" id="totalRevenue">₹0</div></div>
+    </div>
+
+    <div class="analytics-grid">
+      <section class="panel">
+        <h3>Revenue Overview</h3>
+        <div class="chart" id="revenueChart"><div style="color:var(--muted);">Loading live revenue...</div></div>
+      </section>
+      <section class="panel">
+        <h3>Order Health</h3>
+        <div class="status-pills" id="statusPills"></div>
+        <div class="metric-row"><span>Gross revenue</span><strong id="grossProfit">₹0</strong></div>
+        <div class="metric-row"><span>Average order</span><strong id="averageOrder">₹0</strong></div>
+        <div class="metric-row"><span>Top product</span><strong id="topProduct">-</strong></div>
+        <small style="color:var(--muted); display:block; margin-top:14px;">Gross profit is based on order revenue. Add supplier costs later for net profit.</small>
+      </section>
+    </div>
+
+    <section class="panel" style="margin-bottom:22px;">
+      <h3>Product Performance</h3>
+      <div class="product-list" id="performanceList"></div>
+    </section>
+
+    <div class="two-col">
+      <section class="panel">
+        <h3>Add / Edit Panel</h3>
+        <form id="panelForm">
+          <input type="hidden" id="panelId" />
+          <label>Panel Name<input type="text" id="name" placeholder="Example: ABCD Panel" required /></label>
+          <label>Category<select id="category"><option value="non root panel">Non Root Panel</option><option value="root panel">Root Panel</option><option value="ios panel">iOS Panel</option><option value="crackpanel">Crackpanel</option></select></label>
+          <label>Description<textarea id="description" placeholder="Short description..." required></textarea></label>
+          <div class="quick-row"><label>Duration 1<input type="text" id="plan1Name" value="1 Day" /></label><label>Price 1<input type="number" id="plan1Price" value="150" min="0" /></label></div>
+          <div class="quick-row"><label>Duration 2<input type="text" id="plan2Name" value="7 Days" /></label><label>Price 2<input type="number" id="plan2Price" value="500" min="0" /></label></div>
+          <div class="quick-row"><label>Duration 3<input type="text" id="plan3Name" value="30 Days" /></label><label>Price 3<input type="number" id="plan3Price" value="1200" min="0" /></label></div>
+          <label>Pre-added License Keys Stock (1 Key per line)<textarea id="keysPool" placeholder="NEO-ABCD-KEY1&#10;NEO-ABCD-KEY2&#10;NEO-ABCD-KEY3" style="font-family:monospace; min-height:80px;"></textarea></label>
+          <div class="actions"><button type="submit" class="button primary">Save Panel</button><button type="button" class="button secondary" id="resetFormBtn">Reset</button></div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h3>Existing Panels</h3>
+        <div class="product-list" id="productList"></div>
+      </section>
+    </div>
+
+    <!-- RESELLER MANAGEMENT & WALLET CONTROL SECTION -->
+    <div class="two-col" style="margin-top: 22px;">
+      <section class="panel">
+        <h3>Create Reseller Account</h3>
+        <form id="resellerCreateForm">
+          <label>Reseller Username<input type="text" id="newResUsername" placeholder="e.g. crack_reseller1" required /></label>
+          <label>Password<input type="text" id="newResPassword" placeholder="e.g. pass123" required /></label>
+          <label>Partner / Reseller Name<input type="text" id="newResName" placeholder="e.g. Crackpanel Partner" required /></label>
+          <div class="quick-row">
+            <label>Initial Wallet Balance (₹)<input type="number" id="newResBalance" value="1000" min="0" required /></label>
+            <label>Category Access Permission
+              <select id="newResCategory">
+                <option value="all">ALL PANELS (Full Access)</option>
+                <option value="crackpanel">CRACKPANEL Only</option>
+                <option value="root panel">Root Panel Only</option>
+                <option value="non root panel">Non-Root Panel Only</option>
+                <option value="ios panel">iOS Panel Only</option>
+              </select>
+            </label>
+          </div>
+          <div class="actions" style="margin-top: 10px;"><button type="submit" class="button primary">Create Reseller Partner</button></div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h3>Active Resellers & Wallet Balances</h3>
+        <div class="product-list" id="resellerList">Loading resellers...</div>
+      </section>
+    </div>
+
+    <section class="panel orders-panel">
+      <h3>Orders Received</h3>
+      <div class="order-list" id="orderList"></div>
+    </section>
+  </div>
+
+  <div class="login-box" id="loginScreen">
+    <h2>NEO Admin Login</h2>
+    <form id="loginForm">
+      <label>Username<input type="text" id="adminUsername" value="admin" required /></label>
+      <label>Password<input type="password" id="adminPassword" value="neo123" required /></label>
+      <div style="margin-top:16px;"><button type="submit" class="button primary" style="width:100%;">Login</button></div>
+    </form>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'neo_admin_session';
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    let auth = null;
+
+    function setAuth(data) { auth = data; localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    function getAuth() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function getHeaders() {
+      if (!auth) return {};
+      const token = btoa(`${auth.username}:${auth.password}`);
+      return { 'Authorization': `Basic ${token}` };
+    }
+
+    async function login(username, password) {
+      const res = await fetch(`${API_BASE}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+      setAuth({ username, password });
+      return data;
+    }
+
+    function renderDashboardState() {
+      const session = getAuth();
+      const loginScreen = document.getElementById('loginScreen');
+      const dashboardScreen = document.getElementById('dashboardScreen');
+      if (!session) {
+        loginScreen.style.display = 'block';
+        dashboardScreen.classList.add('hidden');
+        return;
+      }
+      loginScreen.style.display = 'none';
+      dashboardScreen.classList.remove('hidden');
+      loadDashboard();
+    }
+
+    async function loadDashboard() {
+      const res = await fetch(`${API_BASE}/api/dashboard/stats`, { headers: getHeaders() });
+      if (res.status === 401) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderDashboardState();
+        return;
+      }
+      const stats = await res.json();
+      document.getElementById('totalPanels').textContent = stats.totalPanels || 0;
+      document.getElementById('totalCategories').textContent = stats.totalCategories || 0;
+      document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
+      document.getElementById('totalRevenue').textContent = `₹${stats.totalRevenue || 0}`;
+      document.getElementById('grossProfit').textContent = `₹${stats.grossProfit || 0}`;
+      document.getElementById('averageOrder').textContent = `₹${stats.totalOrders ? Math.round(stats.totalRevenue / stats.totalOrders) : 0}`;
+      document.getElementById('topProduct').textContent = stats.productPerformance?.[0]?.productName || '-';
+      renderAnalytics(stats);
+
+      const productsRes = await fetch(`${API_BASE}/api/products`, { headers: getHeaders() });
+      const products = await productsRes.json();
+      renderList(products);
+
+      const ordersRes = await fetch(`${API_BASE}/api/orders`, { headers: getHeaders() });
+      const orders = await ordersRes.json();
+      renderOrders(orders);
+
+      await loadResellers();
+    }
+
+    async function loadResellers() {
+      const res = await fetch(`${API_BASE}/api/admin/resellers`, { headers: getHeaders() });
+      if (!res.ok) return;
+      const resellers = await res.json();
+      renderResellers(resellers);
+    }
+
+    function renderResellers(resellers) {
+      const list = document.getElementById('resellerList');
+      list.innerHTML = '';
+      if (!resellers.length) {
+        list.innerHTML = '<div class="product-item"><div><strong>No resellers yet</strong><small>Create your first reseller partner.</small></div></div>';
+        return;
+      }
+
+      resellers.forEach(reseller => {
+        const catBadge = String(reseller.allowedCategory || 'all').toUpperCase();
+        const row = document.createElement('div');
+        row.className = 'product-item';
+        row.innerHTML = `
+          <div>
+            <strong>${reseller.name} (<span style="color:#0088cc; font-family:monospace;">${reseller.username}</span>)</strong>
+            <small>Category Access: <span style="font-weight:700; color:#111;">${catBadge === 'ALL' ? 'ALL PANELS' : catBadge + ' ONLY'}</span></small>
+            <small>Password: ${reseller.password}</small>
+          </div>
+          <div>
+            <strong style="color:#28c76f; font-size:16px;">₹${reseller.balance}</strong>
+            <small style="color:#666;">Wallet Balance</small>
+          </div>
+          <div class="actions">
+            <button class="button secondary mini" onclick="addResellerBalance('${reseller.id}')">+ Balance</button>
+            <button class="button danger mini" onclick="deleteReseller('${reseller.id}')">Delete</button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    async function addResellerBalance(resellerId) {
+      const input = prompt("Enter amount to ADD to wallet (e.g. 500 or 1000):", "500");
+      if (!input) return;
+      const amount = Number(input);
+      if (isNaN(amount) || amount === 0) return;
+
+      const res = await fetch(`${API_BASE}/api/admin/resellers/${encodeURIComponent(resellerId)}/balance`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...getHeaders() },
+        body: JSON.stringify({ amount })
+      });
+      if (res.ok) loadResellers();
+    }
+
+    async function deleteReseller(resellerId) {
+      if (!confirm("Are you sure you want to delete this reseller account?")) return;
+      const res = await fetch(`${API_BASE}/api/admin/resellers/${encodeURIComponent(resellerId)}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+      });
+      if (res.ok) loadResellers();
+    }
+
+    document.getElementById('resellerCreateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('newResUsername').value.trim();
+      const password = document.getElementById('newResPassword').value.trim();
+      const name = document.getElementById('newResName').value.trim();
+      const balance = Number(document.getElementById('newResBalance').value || 0);
+      const allowedCategory = document.getElementById('newResCategory').value;
+
+      if (!username || !password) return;
+
+      const res = await fetch(`${API_BASE}/api/admin/resellers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getHeaders() },
+        body: JSON.stringify({ username, password, name, balance, allowedCategory })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        document.getElementById('resellerCreateForm').reset();
+        loadResellers();
+      } else {
+        alert(data.message || "Failed to create reseller");
+      }
+    });
+
+    function renderAnalytics(stats) {
+      const pills = document.getElementById('statusPills');
+      pills.innerHTML = Object.entries(stats.statusCounts || {}).map(([status, count]) => `<span class="pill">${status}: <strong>${count}</strong></span>`).join('') || '<span class="pill">No orders</span>';
+      const chart = document.getElementById('revenueChart');
+      const daily = stats.dailyRevenue || [];
+      const max = Math.max(...daily, 1);
+      chart.innerHTML = daily.length ? daily.map((value, index) => {
+        const height = Math.max(12, Math.round((value / max) * 155));
+        return `<div class="bar-wrap"><span class="bar-value">₹${value}</span><div class="bar" style="height:${height}px"></div><span class="bar-label">D${index + 1}</span></div>`;
+      }).join('') : '<div style="color:var(--muted);">No revenue data yet.</div>';
+      const performance = document.getElementById('performanceList');
+      performance.innerHTML = (stats.productPerformance || []).map(item => `<div class="product-item"><div><strong>${item.productName}</strong><small>${item.orders} order${item.orders === 1 ? '' : 's'}</small></div><strong style="color:#111;">₹${item.revenue}</strong><span class="status">Live</span></div>`).join('') || '<div class="product-item"><small>No product sales yet.</small></div>';
+    }
+
+    function renderList(products) {
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+      if (!products.length) {
+        list.innerHTML = '<div class="product-item"><div><strong>No panels yet</strong><small>Add your first product.</small></div></div>';
+        return;
+      }
+
+      products.forEach(panel => {
+        const pricingText = (panel.pricing || []).map(p => `${p.duration}: ₹${p.price}`).join(' • ');
+        const stockCount = Array.isArray(panel.keysPool) ? panel.keysPool.length : 0;
+        const stockBadge = stockCount > 0 
+          ? `<span style="background:#111; color:#fff; padding:2px 7px; border-radius:4px; font-size:11px; margin-left:6px;">Stock: ${stockCount} Keys</span>`
+          : `<span style="background:#777; color:#fff; padding:2px 7px; border-radius:4px; font-size:11px; margin-left:6px;">Auto-Gen Mode</span>`;
+
+        const row = document.createElement('div');
+        row.className = 'product-item';
+        row.innerHTML = `<div><strong>${panel.name} ${stockBadge}</strong><small>${panel.category}</small><div style="color:#a7b5c8; font-size:12px; margin-top:6px;">${pricingText}</div></div><div style="color:#baf5e8; font-weight:700; text-transform:capitalize;">${panel.category}</div><div class="actions"><button class="button secondary mini" data-edit="${panel.id}">Edit</button><button class="button danger mini" data-delete="${panel.id}">Delete</button></div>`;
+        list.appendChild(row);
+      });
+
+      document.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => editPanel(Number(btn.dataset.edit), products)));
+      document.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', () => deletePanel(Number(btn.dataset.delete))));
+    }
+
+    function renderOrders(orders) {
+      const list = document.getElementById('orderList');
+      list.innerHTML = '';
+      if (!orders.length) {
+        list.innerHTML = '<div class="order-item"><div><strong>No orders yet</strong><small>New customer orders will appear here automatically.</small></div></div>';
+        return;
+      }
+
+      orders.forEach(order => {
+        const row = document.createElement('div');
+        row.className = 'order-item';
+        row.innerHTML = `
+          <div><strong>${order.productName}</strong><small>Order: ${order.id}</small><small>${new Date(order.createdAt).toLocaleString()}</small></div>
+          <div><strong>${order.customer}</strong><small>${order.email}</small><small>${order.phone}</small><small>Payment: ${order.paymentMethod || 'online'}</small></div>
+          <div><strong class="order-key">${order.key}</strong><small>Amount: ₹${order.amount}</small><select class="status-select" data-status-id="${order.id}" aria-label="Order status"><option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option><option value="paid" ${order.status === 'paid' ? 'selected' : ''}>Paid</option><option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option><option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option></select></div>
+          <a class="button secondary mini" href="${API_BASE}/order.html?product=${encodeURIComponent(order.productName)}&total=${order.amount}&key=${encodeURIComponent(order.key)}&order=${encodeURIComponent(order.id)}" target="_blank">View</a>
+        `;
+        list.appendChild(row);
+      });
+      document.querySelectorAll('[data-status-id]').forEach(select => select.addEventListener('change', () => updateOrderStatus(select.dataset.statusId, select.value)));
+    }
+
+    async function updateOrderStatus(orderId, status) {
+      const response = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(orderId)}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...getHeaders() },
+        body: JSON.stringify({ status })
+      });
+      if (response.ok) loadDashboard();
+    }
+
+    function editPanel(id, products) {
+      const panel = products.find(item => Number(item.id) === id);
+      if (!panel) return;
+      document.getElementById('panelId').value = panel.id;
+      document.getElementById('name').value = panel.name;
+      document.getElementById('category').value = panel.category;
+      document.getElementById('description').value = panel.description || panel.desc || '';
+      document.getElementById('plan1Name').value = panel.pricing[0]?.duration || '1 Day';
+      document.getElementById('plan1Price').value = panel.pricing[0]?.price || 0;
+      document.getElementById('plan2Name').value = panel.pricing[1]?.duration || '7 Days';
+      document.getElementById('plan2Price').value = panel.pricing[1]?.price || 0;
+      document.getElementById('plan3Name').value = panel.pricing[2]?.duration || '30 Days';
+      document.getElementById('plan3Price').value = panel.pricing[2]?.price || 0;
+      document.getElementById('keysPool').value = Array.isArray(panel.keysPool) ? panel.keysPool.join('\n') : '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deletePanel(id) {
+      const res = await fetch(`${API_BASE}/api/products/${id}`, { method: 'DELETE', headers: getHeaders() });
+      if (res.ok) {
+        loadDashboard();
+      }
+    }
+
+    document.getElementById('panelForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const panelId = Number(document.getElementById('panelId').value || 0);
+      const name = document.getElementById('name').value.trim();
+      const category = document.getElementById('category').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const rawKeys = document.getElementById('keysPool').value;
+      const keysPool = rawKeys.split(/\r?\n/).map(k => k.trim()).filter(Boolean);
+      const pricing = [
+        { duration: document.getElementById('plan1Name').value.trim() || '1 Day', price: Number(document.getElementById('plan1Price').value || 0) },
+        { duration: document.getElementById('plan2Name').value.trim() || '7 Days', price: Number(document.getElementById('plan2Price').value || 0) },
+        { duration: document.getElementById('plan3Name').value.trim() || '30 Days', price: Number(document.getElementById('plan3Price').value || 0) }
+      ];
+
+      if (!name || !description) return;
+      const payload = { name, category, description, image: 'images/abcd_panel.png', pricing, keysPool, badges: ['NEW'], features: ['Instant Delivery'] };
+      const url = panelId ? `${API_BASE}/api/products/${panelId}` : `${API_BASE}/api/products`;
+      const method = panelId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', ...getHeaders() },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('panelForm').reset();
+        document.getElementById('panelId').value = '';
+        document.getElementById('plan1Name').value = '1 Day';
+        document.getElementById('plan1Price').value = 150;
+        document.getElementById('plan2Name').value = '7 Days';
+        document.getElementById('plan2Price').value = 500;
+        document.getElementById('plan3Name').value = '30 Days';
+        document.getElementById('plan3Price').value = 1200;
+        document.getElementById('keysPool').value = '';
+        loadDashboard();
+      }
+    });
+
+    document.getElementById('resetFormBtn').addEventListener('click', () => {
+      document.getElementById('panelForm').reset();
+      document.getElementById('panelId').value = '';
+      document.getElementById('plan1Name').value = '1 Day';
+      document.getElementById('plan1Price').value = 150;
+      document.getElementById('plan2Name').value = '7 Days';
+      document.getElementById('plan2Price').value = 500;
+      document.getElementById('plan3Name').value = '30 Days';
+      document.getElementById('plan3Price').value = 1200;
+      document.getElementById('keysPool').value = '';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY); 
+      auth = null; 
+      renderDashboardState();
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+      try {
+        await login(username, password);
+        renderDashboardState();
+      } catch (err) {
+        alert(err.message || 'Login failed');
+      }
+    });
+
+    auth = getAuth();
+    renderDashboardState();
+  </script>
+</body>
+</html>

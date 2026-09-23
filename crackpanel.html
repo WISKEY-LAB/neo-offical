@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crackpanel Studio | NEO</title>
+  <style>
+    :root { --ink:#111; --muted:#686862; --line:#d8d8d2; --paper:#fff; --wash:#f4f4f1; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); font-family:Georgia,'Times New Roman',serif; background:linear-gradient(135deg,#fafaf7,#ecece8); min-height:100vh; }
+    .shell { max-width:1180px; margin:auto; padding:32px 22px 70px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:30px; animation:rise .55s ease both; }
+    .brand { font-size:29px; font-weight:800; letter-spacing:.08em; }
+    .brand span { display:inline-block; background:#111; color:#fff; font:700 11px Arial,sans-serif; letter-spacing:.16em; padding:6px 8px; margin-left:8px; }
+    .nav { display:flex; gap:9px; flex-wrap:wrap; }
+    .button { display:inline-flex; align-items:center; justify-content:center; text-decoration:none; border:1px solid var(--ink); padding:11px 16px; border-radius:4px; font:700 12px Arial,sans-serif; cursor:pointer; }
+    .button.dark { background:#111; color:#fff; }
+    .button.light { background:#fff; color:#111; border-color:var(--line); }
+    .hero { background:#111; color:#fff; padding:34px; border-radius:5px; margin-bottom:22px; position:relative; overflow:hidden; animation:rise .65s ease both; }
+    .hero:after { content:'CRACKPANEL'; position:absolute; right:25px; bottom:-10px; font:800 clamp(38px,9vw,110px)/1 Arial,sans-serif; letter-spacing:-.08em; color:rgba(255,255,255,.06); }
+    .hero h1 { margin:0 0 7px; font-size:clamp(30px,5vw,58px); position:relative; z-index:1; }
+    .hero p { margin:0; color:#c8c8c2; max-width:600px; position:relative; z-index:1; }
+    .layout { display:grid; grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr); gap:22px; }
+    .panel { background:rgba(255,255,255,.9); border:1px solid var(--line); border-radius:5px; padding:22px; box-shadow:0 12px 28px rgba(0,0,0,.06); animation:rise .75s ease both; }
+    h2 { margin:0 0 18px; font-size:22px; }
+    form { display:grid; gap:12px; }
+    label { display:grid; gap:6px; color:var(--muted); font:12px Arial,sans-serif; }
+    input,textarea { width:100%; padding:12px; border:1px solid var(--line); border-radius:4px; background:#fff; color:#111; font:14px Arial,sans-serif; }
+    textarea { min-height:92px; resize:vertical; }
+    .plans { display:grid; gap:9px; grid-template-columns:1fr 1fr; }
+    .list { display:grid; gap:11px; }
+    .item { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:15px; background:var(--wash); border:1px solid var(--line); border-radius:4px; animation:rise .45s ease both; }
+    .item strong { display:block; margin-bottom:5px; }
+    .item small { color:var(--muted); font:12px/1.5 Arial,sans-serif; }
+    .empty { color:var(--muted); font:14px Arial,sans-serif; }
+    .notice { margin:14px 0 0; color:var(--muted); font:12px/1.5 Arial,sans-serif; }
+    .login { max-width:420px; margin:80px auto; }
+    .hidden { display:none !important; }
+    @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+    @media(max-width:780px) { .layout { grid-template-columns:1fr; } .hero { padding:27px; } .item { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell" id="app">
+    <header class="topbar">
+      <div class="brand">NEO <span>CRACKPANEL</span></div>
+      <nav class="nav"><a class="button light" href="dashboard.html">Main Dashboard</a><a class="button dark" href="index.html">Store Front</a></nav>
+    </header>
+    <section class="hero"><h1>Crackpanel Studio</h1><p>Yahan se sirf Crackpanel category ke products manage honge. Jo panel yahan add hoga, woh main store me Crackpanel filter ke andar show hoga.</p></section>
+    <div class="layout">
+      <section class="panel">
+        <h2>Add Crackpanel</h2>
+        <form id="form">
+          <label>Panel Name<input id="name" required placeholder="Example: New Crackpanel" /></label>
+          <label>Description<textarea id="description" required placeholder="Panel details..."></textarea></label>
+          <div class="plans"><label>Plan 1<input id="plan1Name" value="1 Day" /></label><label>Price 1<input id="plan1Price" type="number" min="0" value="100" /></label></div>
+          <div class="plans"><label>Plan 2<input id="plan2Name" value="7 Days" /></label><label>Price 2<input id="plan2Price" type="number" min="0" value="400" /></label></div>
+          <div class="plans"><label>Plan 3<input id="plan3Name" value="30 Days" /></label><label>Price 3<input id="plan3Price" type="number" min="0" value="1000" /></label></div>
+          <button class="button dark" type="submit">Add To Crackpanel</button>
+        </form>
+        <p class="notice">Category locked: <strong>crackpanel</strong>. Is page se doosri category me product nahi jayega.</p>
+      </section>
+      <section class="panel"><h2>Crackpanel Products</h2><div class="list" id="list"><div class="empty">Loading...</div></div></section>
+    </div>
+  </main>
+  <section class="panel login hidden" id="login"><h2>Admin Login</h2><form id="loginForm"><label>Username<input id="username" value="admin" required /></label><label>Password<input id="password" type="password" value="neo123" required /></label><button class="button dark" type="submit">Login</button></form></section>
+  <script>
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    const SESSION_KEY = 'neo_admin_session';
+    let auth = null;
+    const headers = () => ({ Authorization: `Basic ${btoa(`${auth.username}:${auth.password}`)}` });
+    function session() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
+    async function login(username, password) { const response = await fetch(`${API_BASE}/api/admin/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ username, password }) }); if (!response.ok) throw new Error('Login failed'); auth = { username, password }; localStorage.setItem(SESSION_KEY, JSON.stringify(auth)); }
+    async function load() { const response = await fetch(`${API_BASE}/api/products`); const products = await response.json(); const list = document.getElementById('list'); const crackpanels = products.filter(item => item.category === 'crackpanel'); list.innerHTML = crackpanels.length ? crackpanels.map(item => `<article class="item"><div><strong>${item.name}</strong><small>${item.desc}<br>${item.pricing.map(plan => `${plan.duration}: ₹${plan.price}`).join(' • ')}</small></div><button class="button light" data-delete="${item.id}">Delete</button></article>`).join('') : '<div class="empty">Abhi koi Crackpanel nahi hai.</div>'; document.querySelectorAll('[data-delete]').forEach(button => button.addEventListener('click', () => remove(button.dataset.delete))); }
+    async function remove(id) { const response = await fetch(`${API_BASE}/api/products/${id}`, { method:'DELETE', headers:headers() }); if (response.ok) load(); }
+    function showApp() { document.getElementById('app').classList.remove('hidden'); document.getElementById('login').classList.add('hidden'); load(); }
+    document.getElementById('form').addEventListener('submit', async event => { event.preventDefault(); const pricing = [{ duration:document.getElementById('plan1Name').value || '1 Day', price:Number(document.getElementById('plan1Price').value || 0) }, { duration:document.getElementById('plan2Name').value || '7 Days', price:Number(document.getElementById('plan2Price').value || 0) }, { duration:document.getElementById('plan3Name').value || '30 Days', price:Number(document.getElementById('plan3Price').value || 0) }]; const response = await fetch(`${API_BASE}/api/products`, { method:'POST', headers:{'Content-Type':'application/json', ...headers()}, body:JSON.stringify({ name:document.getElementById('name').value.trim(), description:document.getElementById('description').value.trim(), category:'crackpanel', image:'images/abcd_panel.png', badges:['CRACKPANEL'], features:['Instant Delivery'], pricing }) }); if (response.ok) { event.target.reset(); load(); } });
+    document.getElementById('loginForm').addEventListener('submit', async event => { event.preventDefault(); try { await login(document.getElementById('username').value, document.getElementById('password').value); showApp(); } catch { alert('Invalid admin login'); } });
+    auth = session(); if (auth) showApp(); else { document.getElementById('app').classList.add('hidden'); document.getElementById('login').classList.remove('hidden'); }
+  </script>
+</body>
+</html>
