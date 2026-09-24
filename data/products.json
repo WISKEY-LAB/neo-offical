@@ -190,33 +190,5 @@
       "STRICKS-BR-KEY-501",
       "STRICKS-BR-KEY-502"
     ]
-  },
-  {
-    "id": 1790188095333,
-    "name": "xyz",
-    "category": "non root panel",
-    "image": "images/abcd_panel.png",
-    "badges": [
-      "NEW"
-    ],
-    "desc": "digwigbib",
-    "features": [
-      "Instant Delivery"
-    ],
-    "pricing": [
-      {
-        "duration": "1 Day",
-        "price": 150
-      },
-      {
-        "duration": "7 Days",
-        "price": 500
-      },
-      {
-        "duration": "30 Days",
-        "price": 1200
-      }
-    ],
-    "keysPool": []
   }
 ]
