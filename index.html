@@ -690,6 +690,12 @@
                 Reseller Portal
             </a>
 
+            <!-- GMAIL LOGIN / MY ORDERS BUTTON -->
+            <button class="action-icon-btn" onclick="openUserOrdersModal()" title="Gmail Login / My Orders" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #0284c7;">
+                <i class="fa-solid fa-key"></i>
+                Gmail Login / My Keys
+            </button>
+
             <!-- ADMIN LOGIN BUTTON -->
             <button class="action-icon-btn" onclick="openAdminPanelAccess()" title="Admin Panel" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -841,6 +847,31 @@
         </div>
     </div>
 
+    <!-- GMAIL CUSTOMER LOGIN & PURCHASES MODAL -->
+    <div class="modal-bg" id="userOrdersModal">
+        <div class="modal-card" style="max-width: 540px;">
+            <span class="close-btn" onclick="closeModal('userOrdersModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div style="width: 50px; height: 50px; background: #0284c7; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px;">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 800;">Gmail Login & Purchased Keys</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Apni Gmail Email address daliye aur apne saare kharide huye panel keys aur download links yahi dekhiye!</p>
+            </div>
+            <form onsubmit="handleUserOrdersLookup(event)">
+                <div class="form-group">
+                    <label>YOUR GMAIL ADDRESS</label>
+                    <input type="email" id="userLookupEmail" placeholder="yourgmail@gmail.com" required>
+                </div>
+                <button type="submit" class="btn" id="userLookupBtn" style="width: 100%; background: #0284c7; font-weight: 800;">View My Purchased Keys</button>
+            </form>
+            <div id="userOrdersResult" style="display: none; margin-top: 18px;">
+                <h4 style="font-size: 14px; font-weight: 800; margin-bottom: 10px;">Your Orders & Keys:</h4>
+                <div id="userOrdersList" style="display: grid; gap: 10px; max-height: 280px; overflow-y: auto;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- BUY RESELLER MEMBERSHIP (₹100) MODAL -->
     <div class="modal-bg" id="buyResellerModal">
         <div class="modal-card" style="max-width: 440px;">
@@ -854,25 +885,22 @@
             </div>
             <form onsubmit="handleBuyReseller(event)">
                 <div class="form-group">
-                    <label>CHOOSE RESELLER USERNAME</label>
+                    <label>GMAIL / EMAIL ADDRESS</label>
+                    <input type="email" id="buyResEmail" placeholder="yourname@gmail.com" required onchange="if(!document.getElementById('buyResUser').value){ document.getElementById('buyResUser').value = this.value.split('@')[0]; }">
+                </div>
+                <div class="form-group">
+                    <label>WHATSAPP / PHONE NUMBER</label>
+                    <input type="text" id="buyResPhone" placeholder="+91 9876543210" required>
+                </div>
+                <div class="form-group">
+                    <label>RESELLER USERNAME</label>
                     <input type="text" id="buyResUser" placeholder="e.g. myreseller1" required autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label>CHOOSE PASSWORD</label>
+                    <label>PASSWORD (FOR RESELLER PORTAL LOGIN)</label>
                     <input type="password" id="buyResPass" placeholder="••••••••" required autocomplete="new-password">
                 </div>
-                <div class="form-group">
-                    <label>YOUR NAME / BRAND NAME</label>
-                    <input type="text" id="buyResName" placeholder="e.g. Rahul Gamer" required>
-                </div>
-                <div class="form-group">
-                    <label>EMAIL ADDRESS</label>
-                    <input type="email" id="buyResEmail" placeholder="yourname@gmail.com" required>
-                </div>
-                <div class="form-group">
-                    <label>WHATSAPP NUMBER</label>
-                    <input type="text" id="buyResPhone" placeholder="+91 9876543210" required>
-                </div>
+                <input type="hidden" id="buyResName" value="Reseller Partner">
                 <div class="form-group">
                     <label>YOUR UPI ID FOR ₹100 PAYMENT</label>
                     <input type="text" id="buyResUpi" placeholder="e.g. yourname@oksbi" required>
@@ -886,13 +914,23 @@
     <div class="modal-bg" id="checkoutModal">
         <div class="modal-card">
             <span class="close-btn" onclick="closeModal('checkoutModal')">&times;</span>
-            <h3 style="font-size: 18px; font-weight: 800;">Checkout & Payment</h3>
+            <h3 style="font-size: 18px; font-weight: 800;">Checkout & Instant Key Order</h3>
             <p id="checkoutProductTitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Selected Items</p>
+
+            <div class="form-group">
+                <label>GMAIL ADDRESS (REQUIRED - TO UNLOCK & VIEW KEYS)</label>
+                <input type="email" id="custEmail" placeholder="yourname@gmail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>WHATSAPP NUMBER (REQUIRED)</label>
+                <input type="text" id="custWhatsapp" placeholder="+91 9000000000" required>
+            </div>
 
             <div class="form-group">
                 <label>PAYMENT METHOD</label>
                 <select id="paymentMethod" class="duration-select">
-                    <option value="online">PhonePe Payment</option>
+                    <option value="online">PhonePe Payment / Direct UPI</option>
                     <option value="crypto">Crypto Payment</option>
                     <option value="manual">Contact Admin</option>
                 </select>
@@ -903,27 +941,14 @@
                 <input type="text" id="payerUpiId" placeholder="e.g. yourname@oksbi" autocomplete="off">
             </div>
 
-            <div class="form-group">
-                <label>DISCORD USERNAME / ID</label>
-                <input type="text" id="custDiscord" placeholder="e.g. Username#0000">
-            </div>
-
-            <div class="form-group">
-                <label>EMAIL ADDRESS</label>
-                <input type="email" id="custEmail" placeholder="yourname@gmail.com">
-            </div>
-
-            <div class="form-group">
-                <label>WHATSAPP NUMBER</label>
-                <input type="text" id="custWhatsapp" placeholder="+91 9000000000">
-            </div>
+            <input type="hidden" id="custDiscord" value="Customer">
 
             <div class="form-group">
                 <label>REFERRAL CODE / REFERRER EMAIL (OPTIONAL - Referrer gets ₹10)</label>
                 <input type="text" id="custReferrerCode" placeholder="e.g. REF-ABC123 or referrer@gmail.com">
             </div>
 
-            <button class="btn" id="submitOrderBtn" style="width: 100%; margin-top: 10px;" onclick="confirmOrderWithWebhook()">Submit Order Deal</button>
+            <button class="btn" id="submitOrderBtn" style="width: 100%; margin-top: 10px; font-weight:800;" onclick="confirmOrderWithWebhook()">Pay Now & Get Key</button>
         </div>
     </div>
 
@@ -1122,29 +1147,38 @@
             selectedDurations[p.id] = 0;
         });
 
-        function getDisplayPrice(originalPrice) {
-            if (isResellerActive) {
-                return Math.max(1, Math.round(originalPrice * 0.75)); // 25% reseller discount
+        function getDisplayPrice(tier) {
+            if (!tier) return 0;
+            if (typeof tier === 'number') {
+                return isResellerActive ? Math.max(1, Math.round(tier * 0.75)) : tier;
             }
-            return originalPrice;
+            if (isResellerActive) {
+                return (tier.resellerPrice !== undefined && tier.resellerPrice !== null && tier.resellerPrice !== '') 
+                    ? Number(tier.resellerPrice) 
+                    : Math.max(1, Math.round(Number(tier.price || 0) * 0.75));
+            }
+            return Number(tier.price || 0);
         }
 
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
+            if (!grid) return;
             grid.innerHTML = '';
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
 
-            products.forEach(p => {
+            (products || []).forEach(p => {
                 const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
                 const matchesSearch = p.name.toLowerCase().includes(searchVal);
 
                 if (matchesCat && matchesSearch) {
                     const activeIndex = selectedDurations[p.id] || 0;
-                    const activeTier = p.pricing[activeIndex] || p.pricing[0];
-                    const activePrice = getDisplayPrice(activeTier.price);
+                    const pricingList = Array.isArray(p.pricing) && p.pricing.length ? p.pricing : [{ duration: '1 Day', price: 100, resellerPrice: 70 }];
+                    const activeTier = pricingList[activeIndex] || pricingList[0];
+                    const activePrice = getDisplayPrice(activeTier);
 
-                    let optionsHTML = p.pricing.map((tier, idx) => {
-                        const priceDisplay = getDisplayPrice(tier.price);
+                    let optionsHTML = pricingList.map((tier, idx) => {
+                        const priceDisplay = getDisplayPrice(tier);
                         return `
                             <option value="${idx}" ${idx === activeIndex ? 'selected' : ''}>
                                 ${tier.duration} - ₹${priceDisplay} ${isResellerActive ? '(Reseller Rate)' : ''}
@@ -1158,7 +1192,9 @@
                         : `<span class="badge-tag cyan" style="background:#0f172a; color:#ffffff; font-weight:700;">INSTANT DELIVERY</span>`;
 
                     let resellerBadge = isResellerActive ? `<span class="badge-tag" style="background:#7367f0; color:#fff; font-weight:800;">RESELLER DISCOUNT</span>` : '';
-                    let badgeHTML = p.badges.map(b => `<span class="badge-tag cyan">${b}</span>`).join(' ') + ' ' + stockBadge + ' ' + resellerBadge;
+                    let badgeList = Array.isArray(p.badges) ? p.badges : ['NEW'];
+                    let badgeHTML = badgeList.map(b => `<span class="badge-tag cyan">${b}</span>`).join(' ') + ' ' + stockBadge + ' ' + resellerBadge;
+                    let descText = p.desc || p.description || 'High performance panel';
 
                     grid.innerHTML += `
                         <div class="product-card">
@@ -1166,11 +1202,11 @@
                                 <div class="badge-overlay">
                                     ${badgeHTML}
                                 </div>
-                                <img src="${p.image}" alt="${p.name}" onerror="this.src='images/abcd_panel.png'">
+                                <img src="${p.image || 'images/abcd_panel.png'}" alt="${p.name}" onerror="this.src='images/abcd_panel.png'">
                             </div>
                             <div class="card-body">
                                 <div class="product-name">${p.name}</div>
-                                <div class="product-desc">${p.desc}</div>
+                                <div class="product-desc">${descText}</div>
 
                                 <!-- VIDEO AND FILE LINKS DISPLAY RIGHT HERE IN FRONT -->
                                 <div style="display: flex; gap: 6px; margin-top: 10px; margin-bottom: 8px;">
@@ -1178,7 +1214,7 @@
                                         <i class="fa-solid fa-file-arrow-down" style="color:#0088cc;"></i> File Link
                                     </a>
                                     <a href="${p.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="flex:1; text-decoration:none; background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; padding:6px 8px; border-radius:6px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
-                                        <i class="fa-solid fa-circle-play" style="color:#ef4444;"></i> Video Link
+                                        <i class="fa-solid fa-circle-play" style="color:#ef4444;"></i> Setup Video Link
                                     </a>
                                 </div>
 
@@ -1209,11 +1245,13 @@
         fetch(`${API_BASE}/api/products`)
             .then(response => response.ok ? response.json() : Promise.reject(new Error('Catalog unavailable')))
             .then(serverProducts => {
-                products = serverProducts;
-                products.forEach(product => {
-                    if (typeof selectedDurations[product.id] === 'undefined') selectedDurations[product.id] = 0;
-                });
-                renderProducts();
+                if (Array.isArray(serverProducts) && serverProducts.length > 0) {
+                    products = serverProducts;
+                    products.forEach(product => {
+                        if (typeof selectedDurations[product.id] === 'undefined') selectedDurations[product.id] = 0;
+                    });
+                    renderProducts();
+                }
             })
             .catch(error => console.error(error));
 
@@ -1221,12 +1259,76 @@
             selectedDurations[productId] = parseInt(index);
             const p = products.find(item => item.id === productId);
             if (p) {
-                const tier = p.pricing[index];
+                const pricingList = Array.isArray(p.pricing) && p.pricing.length ? p.pricing : [{ duration: '1 Day', price: 100 }];
+                const tier = pricingList[index] || pricingList[0];
                 const priceEl = document.getElementById(`cardPrice-${productId}`);
-                const displayPrice = getDisplayPrice(tier.price);
+                const displayPrice = getDisplayPrice(tier);
                 if (priceEl) {
                     priceEl.innerHTML = `₹${displayPrice}<span class="price-unit">/${tier.duration}</span>`;
                 }
+            }
+        }
+
+        /* --- GMAIL USER PURCHASES & KEYS LOOKUP --- */
+        function openUserOrdersModal() {
+            document.getElementById('userOrdersModal').style.display = 'flex';
+        }
+
+        async function handleUserOrdersLookup(e) {
+            e.preventDefault();
+            const email = document.getElementById('userLookupEmail').value.trim();
+            const btn = document.getElementById('userLookupBtn');
+            const resultBox = document.getElementById('userOrdersResult');
+            const list = document.getElementById('userOrdersList');
+
+            if (!email) return;
+            btn.innerText = "Checking Orders...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/user/orders?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    list.innerHTML = '';
+                    resultBox.style.display = 'block';
+
+                    if (!data.orders || data.orders.length === 0) {
+                        list.innerHTML = `<div style="padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; text-align:center; color:#64748b;">No panel purchases found for '${email}'. Make sure you entered the correct email used during purchase.</div>`;
+                    } else {
+                        data.orders.forEach(order => {
+                            const isPaid = order.status === 'paid' || order.status === 'delivered';
+                            const statusHtml = isPaid
+                                ? `<span style="color:#28c76f; font-weight:800;">ACTIVE</span>`
+                                : `<span style="color:#f59e0b; font-weight:800;">PENDING PAYMENT</span>`;
+                            const keyDisplay = isPaid && order.key
+                                ? `<div style="font-family:monospace; font-weight:800; color:#28c76f; background:#000; padding:6px 10px; border-radius:6px; margin-top:4px; font-size:13px; word-break:break-all;">Key: ${order.key}</div>`
+                                : `<div style="color:#f59e0b; font-size:11px; margin-top:4px;">⏳ Key unlocks after Admin approves payment</div>`;
+
+                            list.innerHTML += `
+                                <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px; border-radius:8px; text-align:left;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <strong>${order.productName}</strong>
+                                        ${statusHtml}
+                                    </div>
+                                    <small style="color:#64748b; display:block; margin-top:2px;">Order ID: ${order.id} • Amount: ₹${order.amount}</small>
+                                    ${keyDisplay}
+                                    <div style="display:flex; gap:8px; margin-top:8px;">
+                                        <a href="${order.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="font-size:11px; text-decoration:none; color:#0088cc; font-weight:700;">📁 File Link</a>
+                                        <a href="${order.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="font-size:11px; text-decoration:none; color:#ef4444; font-weight:700;">🎬 Setup Video</a>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                } else {
+                    showToast(data.message || "Could not fetch orders.");
+                }
+            } catch (err) {
+                showToast("Server connection error.");
+            } finally {
+                btn.innerText = "View My Purchased Keys";
+                btn.disabled = false;
             }
         }
 
@@ -1235,8 +1337,9 @@
             if (!p) return;
 
             const idx = selectedDurations[productId] || 0;
-            const tier = p.pricing[idx] || p.pricing[0];
-            const price = getDisplayPrice(tier.price);
+            const pricingList = Array.isArray(p.pricing) && p.pricing.length ? p.pricing : [{ duration: '1 Day', price: 100 }];
+            const tier = pricingList[idx] || pricingList[0];
+            const price = getDisplayPrice(tier);
             const cartItem = {
                 id: p.id,
                 name: `${p.name} (${tier.duration})`,
@@ -1254,8 +1357,9 @@
             if (!p) return;
 
             const idx = selectedDurations[productId] || 0;
-            const tier = p.pricing[idx] || p.pricing[0];
-            const price = getDisplayPrice(tier.price);
+            const pricingList = Array.isArray(p.pricing) && p.pricing.length ? p.pricing : [{ duration: '1 Day', price: 100 }];
+            const tier = pricingList[idx] || pricingList[0];
+            const price = getDisplayPrice(tier);
             openCheckout(`${p.name} - ${tier.duration}`, price);
         }
 
@@ -1337,16 +1441,18 @@
             if (!p) return;
 
             const idx = selectedDurations[id] || 0;
-            const tier = p.pricing[idx] || p.pricing[0];
-            const price = getDisplayPrice(tier.price);
+            const pricingList = Array.isArray(p.pricing) && p.pricing.length ? p.pricing : [{ duration: '1 Day', price: 100 }];
+            const tier = pricingList[idx] || pricingList[0];
+            const price = getDisplayPrice(tier);
 
             document.getElementById('qvTitle').innerText = p.name;
-            document.getElementById('qvDesc').innerText = p.desc;
+            document.getElementById('qvDesc').innerText = p.desc || p.description || '';
             document.getElementById('qvPrice').innerText = `₹${price} (${tier.duration})`;
 
             const list = document.getElementById('qvFeatures');
             list.innerHTML = '';
-            p.features.forEach(f => {
+            const featuresList = Array.isArray(p.features) ? p.features : ['Instant Delivery'];
+            featuresList.forEach(f => {
                 list.innerHTML += `<li>✔ ${f}</li>`;
             });
 
@@ -1496,8 +1602,8 @@
             const paymentMethod = document.getElementById('paymentMethod').value;
             const submitBtn = document.getElementById('submitOrderBtn');
 
-            if (!discord || !email || !phone) {
-                showToast("Please fill all customer details first!");
+            if (!email || !phone) {
+                showToast("Please fill your Gmail Email address and WhatsApp number!");
                 return;
             }
 

@@ -121,6 +121,9 @@
       <a class="button primary" id="downloadApkBtn" href="https://t.me/neocheatsfiles" target="_blank" rel="noopener noreferrer">
         <i class="fa-solid fa-download"></i> Download Files / APK
       </a>
+      <a class="button secondary" id="watchVideoBtn" href="https://t.me/neocheatsvideos" target="_blank" rel="noopener noreferrer" style="background:#fef2f2; color:#991b1b; border-color:#fca5a5;">
+        <i class="fa-solid fa-circle-play" style="color:#ef4444;"></i> Watch Setup Video
+      </a>
       <button class="button secondary" onclick="checkOrderStatus()" id="refreshBtn">
         <i class="fa-solid fa-rotate-right"></i> Refresh Status
       </button>
@@ -175,9 +178,13 @@
         const keyBox = document.getElementById('keyBox');
         const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadApkBtn');
+        const watchVideoBtn = document.getElementById('watchVideoBtn');
 
         if (data.telegramLink) {
           downloadBtn.href = data.telegramLink;
+        }
+        if (data.videoLink) {
+          watchVideoBtn.href = data.videoLink;
         }
 
         if (data.status === 'paid' || data.status === 'delivered') {

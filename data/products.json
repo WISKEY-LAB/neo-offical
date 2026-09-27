@@ -5,6 +5,7 @@
     "category": "non root panel",
     "image": "images/abcd_panel.png",
     "telegramLink": "https://t.me/neocheatsfiles",
+    "videoLink": "https://t.me/neocheatsvideos",
     "badges": [
       "NON-ROOT",
       "FREEFIRE"
@@ -19,19 +20,23 @@
     "pricing": [
       {
         "duration": "12 Hours",
-        "price": 25
+        "price": 25,
+        "resellerPrice": 15
       },
       {
         "duration": "1 Day",
-        "price": 45
+        "price": 45,
+        "resellerPrice": 30
       },
       {
         "duration": "3 Days",
-        "price": 120
+        "price": 120,
+        "resellerPrice": 80
       },
       {
         "duration": "7 Days",
-        "price": 200
+        "price": 200,
+        "resellerPrice": 140
       }
     ],
     "keysPool": [
@@ -45,6 +50,7 @@
     "category": "root panel",
     "image": "images/invisible_x.png",
     "telegramLink": "https://t.me/neocheatsfiles",
+    "videoLink": "https://t.me/neocheatsvideos",
     "badges": [
       "ROOTED KERNEL",
       "KERNEL VERSION"
@@ -60,19 +66,23 @@
     "pricing": [
       {
         "duration": "1 Day",
-        "price": 100
+        "price": 100,
+        "resellerPrice": 70
       },
       {
         "duration": "7 Days",
-        "price": 400
+        "price": 400,
+        "resellerPrice": 280
       },
       {
         "duration": "15 Days",
-        "price": 600
+        "price": 600,
+        "resellerPrice": 420
       },
       {
         "duration": "30 Days",
-        "price": 1000
+        "price": 1000,
+        "resellerPrice": 700
       }
     ],
     "keysPool": [
@@ -86,6 +96,7 @@
     "category": "ios panel",
     "image": "images/miguel_ios.png",
     "telegramLink": "https://t.me/neocheatsfiles",
+    "videoLink": "https://t.me/neocheatsvideos",
     "badges": [
       "IOS / IPAD",
       "FREEFIRE"
@@ -102,15 +113,18 @@
     "pricing": [
       {
         "duration": "1 Day",
-        "price": 200
+        "price": 200,
+        "resellerPrice": 140
       },
       {
         "duration": "7 Days",
-        "price": 600
+        "price": 600,
+        "resellerPrice": 420
       },
       {
         "duration": "30 Days",
-        "price": 1100
+        "price": 1100,
+        "resellerPrice": 770
       }
     ],
     "keysPool": [
@@ -124,6 +138,7 @@
     "category": "root panel",
     "image": "images/rapid_core.png",
     "telegramLink": "https://t.me/neocheatsfiles",
+    "videoLink": "https://t.me/neocheatsvideos",
     "badges": [
       "BRUTAL",
       "STATUS: INJECTED"
@@ -140,19 +155,23 @@
     "pricing": [
       {
         "duration": "1 Day",
-        "price": 50
+        "price": 50,
+        "resellerPrice": 35
       },
       {
         "duration": "7 Days",
-        "price": 250
+        "price": 250,
+        "resellerPrice": 175
       },
       {
         "duration": "14 Days",
-        "price": 350
+        "price": 350,
+        "resellerPrice": 245
       },
       {
         "duration": "30 Days",
-        "price": 600
+        "price": 600,
+        "resellerPrice": 420
       }
     ],
     "keysPool": [
@@ -166,6 +185,7 @@
     "category": "root panel",
     "image": "images/stricks_br.png",
     "telegramLink": "https://t.me/neocheatsfiles",
+    "videoLink": "https://t.me/neocheatsvideos",
     "badges": [
       "ROOT",
       "FREEFIRE BR"
@@ -180,15 +200,18 @@
     "pricing": [
       {
         "duration": "1 Day",
-        "price": 60
+        "price": 60,
+        "resellerPrice": 40
       },
       {
         "duration": "7 Days",
-        "price": 280
+        "price": 280,
+        "resellerPrice": 190
       },
       {
         "duration": "30 Days",
-        "price": 650
+        "price": 650,
+        "resellerPrice": 450
       }
     ],
     "keysPool": [

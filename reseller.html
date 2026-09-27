@@ -103,6 +103,7 @@
       <div class="user-info">
         <div class="cat-badge" id="resCategoryBadge">Allowed: All Panels</div>
         <div class="balance-pill"><i class="fa-solid fa-wallet"></i> Wallet: <span id="resWalletBalance">₹0</span></div>
+        <button class="logout-btn" style="background: rgba(40, 199, 111, 0.2); border-color: var(--accent-green); color: var(--accent-green);" onclick="openRechargeModal()"><i class="fa-solid fa-plus-circle"></i> Add Balance</button>
         <button class="logout-btn" onclick="logoutReseller()"><i class="fa-solid fa-power-off"></i> Logout</button>
       </div>
     </div>
@@ -121,7 +122,7 @@
             <select id="resDurationSelect" class="form-control" required onchange="updatePricePreview()"></select>
           </div>
           <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: var(--muted); font-weight: 700;">Price Deducted:</span>
+            <span style="color: var(--muted); font-weight: 700;">Reseller Cost Deducted:</span>
             <strong style="color: var(--accent-green); font-size: 20px;" id="pricePreview">₹0</strong>
           </div>
           <button type="submit" class="btn-generate" id="genBtn">
@@ -157,9 +158,9 @@
             <strong style="color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> ACTIVE</strong>
           </div>
         </div>
-        <div style="background: rgba(0, 242, 254, 0.05); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 8px; padding: 12px; margin-top: 18px; font-size: 12px; color: var(--muted); line-height: 1.5;">
-          <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Need more wallet balance? Contact Admin to recharge your reseller wallet balance.
-        </div>
+        <button class="btn-generate" onclick="openRechargeModal()" style="margin-top:16px; background: linear-gradient(135deg, #28c76f, #1e7e68);">
+          <i class="fa-solid fa-wallet"></i> Recharge Wallet / Add Money Now
+        </button>
       </div>
     </div>
 
@@ -295,7 +296,8 @@
       product.pricing.forEach((tier, index) => {
         const option = document.createElement('option');
         option.value = index;
-        option.textContent = `${tier.duration} - ₹${tier.price}`;
+        const resPrice = tier.resellerPrice !== undefined && tier.resellerPrice !== null && tier.resellerPrice !== '' ? tier.resellerPrice : Math.round(tier.price * 0.7);
+        option.textContent = `${tier.duration} - Reseller Rate: ₹${resPrice} (Normal: ₹${tier.price})`;
         durationSelect.appendChild(option);
       });
 
@@ -312,7 +314,9 @@
         return;
       }
 
-      document.getElementById('pricePreview').textContent = `₹${product.pricing[durationIndex].price}`;
+      const tier = product.pricing[durationIndex];
+      const resPrice = tier.resellerPrice !== undefined && tier.resellerPrice !== null && tier.resellerPrice !== '' ? tier.resellerPrice : Math.round(tier.price * 0.7);
+      document.getElementById('pricePreview').textContent = `₹${resPrice}`;
     }
 
     async function loadHistory() {
@@ -408,6 +412,51 @@
       document.getElementById('mainWrap').style.display = 'none';
     }
 
+    function openRechargeModal() {
+      document.getElementById('rechargeModal').style.display = 'flex';
+    }
+
+    function closeRechargeModal() {
+      document.getElementById('rechargeModal').style.display = 'none';
+    }
+
+    async function handleRechargeSubmit(e) {
+      e.preventDefault();
+      const amount = Number(document.getElementById('rechargeAmountInput').value || 0);
+      const payerUpiId = document.getElementById('rechargeUpiInput').value.trim();
+      const btn = document.getElementById('rechargeSubmitBtn');
+
+      if (!amount || amount <= 0) {
+        showToast("Enter a valid recharge amount!");
+        return;
+      }
+
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Recharge...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/reseller/recharge-wallet`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify({ amount, paymentMethod: 'online', payerUpiId })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          document.getElementById('resWalletBalance').textContent = `₹${data.newBalance}`;
+          showToast(`>> RECHARGE SUCCESSFUL! ₹${amount} ADDED TO WALLET <<`);
+          closeRechargeModal();
+        } else {
+          showToast(data.message || "Recharge failed.");
+        }
+      } catch (err) {
+        showToast("Server error during wallet recharge!");
+      } finally {
+        btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Pay & Add Balance to Wallet';
+        btn.disabled = false;
+      }
+    }
+
     function copyIssuedKey() {
       const key = document.getElementById('issuedKeyDisplay').textContent.trim();
       copyText(key);
@@ -431,5 +480,33 @@
 
     initResellerPortal();
   </script>
+
+  <!-- RECHARGE WALLET MODAL -->
+  <div class="login-overlay" id="rechargeModal" style="display: none;">
+    <div class="login-card" style="max-width: 440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h3 style="font-size: 20px; font-weight: 900; color: var(--accent-green);"><i class="fa-solid fa-wallet"></i> Recharge Wallet</h3>
+        <button onclick="closeRechargeModal()" style="background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <form onsubmit="handleRechargeSubmit(event)">
+        <div class="form-group">
+          <label>RECHARGE AMOUNT (₹)</label>
+          <input type="number" id="rechargeAmountInput" class="form-control" placeholder="Enter amount (e.g. 500)" value="500" min="10" required>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <button type="button" class="logout-btn" style="flex:1; border-color:var(--card-border);" onclick="document.getElementById('rechargeAmountInput').value = 100">+ ₹100</button>
+          <button type="button" class="logout-btn" style="flex:1; border-color:var(--card-border);" onclick="document.getElementById('rechargeAmountInput').value = 500">+ ₹500</button>
+          <button type="button" class="logout-btn" style="flex:1; border-color:var(--card-border);" onclick="document.getElementById('rechargeAmountInput').value = 1000">+ ₹1000</button>
+        </div>
+        <div class="form-group">
+          <label>YOUR UPI ID FOR PAYMENT</label>
+          <input type="text" id="rechargeUpiInput" class="form-control" placeholder="e.g. reseller@oksbi">
+        </div>
+        <button type="submit" class="btn-generate" id="rechargeSubmitBtn" style="background: linear-gradient(135deg, var(--accent-green), #1e7e68);">
+          <i class="fa-solid fa-credit-card"></i> Pay & Add Balance to Wallet
+        </button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

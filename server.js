@@ -143,7 +143,8 @@ function writeJson(filePath, data) {
 function normalizeProduct(payload) {
   const pricing = Array.isArray(payload.pricing) ? payload.pricing.map(item => ({
     duration: String(item.duration || '1 Day'),
-    price: Number(item.price || 0)
+    price: Number(item.price || 0),
+    resellerPrice: Number(item.resellerPrice !== undefined && item.resellerPrice !== null && item.resellerPrice !== '' ? item.resellerPrice : Math.round(Number(item.price || 0) * 0.7))
   })) : [];
 
   let keysPool = [];
@@ -155,20 +156,30 @@ function normalizeProduct(payload) {
     keysPool = payload.rawKeys.split(/\r?\n/).map(k => k.trim()).filter(Boolean);
   }
 
+  let badges = ['NEW'];
+  if (Array.isArray(payload.badges)) {
+    badges = payload.badges.map(String).map(b => b.trim()).filter(Boolean);
+  } else if (typeof payload.badges === 'string') {
+    badges = payload.badges.split(',').map(b => b.trim()).filter(Boolean);
+  }
+
+  const rawId = payload.id;
+  const validId = (rawId !== undefined && rawId !== null && rawId !== '' && !isNaN(Number(rawId))) ? Number(rawId) : Date.now();
+
   return {
-    id: Number(payload.id) || Date.now(),
+    id: validId,
     name: String(payload.name || 'New Panel').trim(),
     category: String(payload.category || 'non root panel').trim(),
     image: String(payload.image || 'images/abcd_panel.png').trim(),
     telegramLink: String(payload.telegramLink || payload.fileLink || 'https://t.me/neocheatsfiles').trim(),
     videoLink: String(payload.videoLink || payload.video || 'https://t.me/neocheatsvideos').trim(),
-    badges: Array.isArray(payload.badges) ? payload.badges.map(String) : ['NEW'],
+    badges: badges.length ? badges : ['NEW'],
     desc: String(payload.description || payload.desc || 'Panel description').trim(),
     features: Array.isArray(payload.features) ? payload.features.map(String) : ['Instant Delivery'],
     pricing: pricing.length ? pricing : [
-      { duration: '1 Day', price: 100 },
-      { duration: '7 Days', price: 400 },
-      { duration: '30 Days', price: 1200 }
+      { duration: '1 Day', price: 100, resellerPrice: 70 },
+      { duration: '7 Days', price: 400, resellerPrice: 280 },
+      { duration: '30 Days', price: 1200, resellerPrice: 840 }
     ],
     keysPool
   };
@@ -823,8 +834,8 @@ app.post('/api/reseller/generate-key', resellerAuth, keyGenLimiter, (req, res) =
     });
   }
 
-  const selectedTier = product.pricing?.[durationIndex] || product.pricing?.[0] || { duration: '1 Day', price: 100 };
-  const cost = Number(selectedTier.price || 0);
+  const selectedTier = product.pricing?.[durationIndex] || product.pricing?.[0] || { duration: '1 Day', price: 100, resellerPrice: 70 };
+  const cost = Number(selectedTier.resellerPrice !== undefined && selectedTier.resellerPrice !== null && selectedTier.resellerPrice !== '' ? selectedTier.resellerPrice : Math.round(Number(selectedTier.price || 0) * 0.7));
 
   if (req.reseller.balance < cost) {
     return res.status(402).json({
@@ -890,11 +901,81 @@ app.post('/api/reseller/generate-key', resellerAuth, keyGenLimiter, (req, res) =
   });
 });
 
+// RESELLER SELF RECHARGE WALLET
+app.post('/api/reseller/recharge-wallet', resellerAuth, keyGenLimiter, (req, res) => {
+  const { amount, paymentMethod = 'online', payerUpiId } = req.body || {};
+  const rechargeAmount = Number(amount || 0);
+
+  if (isNaN(rechargeAmount) || rechargeAmount <= 0) {
+    return res.status(400).json({ success: false, message: 'Invalid recharge amount' });
+  }
+
+  const resellers = readJson(RESELLERS_PATH, []);
+  const reseller = resellers.find(r => r.id === req.reseller.id);
+  if (!reseller) return res.status(404).json({ success: false, message: 'Reseller not found' });
+
+  reseller.balance = Number(reseller.balance || 0) + rechargeAmount;
+  writeJson(RESELLERS_PATH, resellers);
+
+  // Record in orders log
+  const orders = readJson(ORDERS_PATH, []);
+  const orderRecord = createOrderRecord({
+    productName: `RESELLER WALLET RECHARGE (₹${rechargeAmount})`,
+    total: rechargeAmount,
+    customer: `Reseller: ${reseller.username}`,
+    email: reseller.email || `${reseller.username}@reseller.store`,
+    phone: reseller.phone || 'Reseller Recharge',
+    discord: reseller.name,
+    payerUpiId: payerUpiId || 'RESELLER-UPI',
+    paymentMethod,
+    status: 'paid'
+  });
+  orders.unshift(orderRecord);
+  writeJson(ORDERS_PATH, orders);
+
+  res.json({
+    success: true,
+    message: `₹${rechargeAmount} added to your Reseller Wallet balance!`,
+    newBalance: reseller.balance
+  });
+});
+
 // RESELLER HISTORY
 app.get('/api/reseller/history', resellerAuth, (req, res) => {
   const history = readJson(RESELLER_HISTORY_PATH, []);
   const myHistory = history.filter(h => h.resellerId === req.reseller.id);
   res.json(myHistory);
+});
+
+// CUSTOMER GMAIL MY ORDERS LOOKUP
+app.get('/api/user/orders', (req, res) => {
+  const email = String(req.query.email || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ success: false, message: 'Valid email address required' });
+  }
+
+  const orders = readJson(ORDERS_PATH, []);
+  const myOrders = orders.filter(o => String(o.email || '').trim().toLowerCase() === email);
+  const products = readJson(PRODUCTS_PATH, DEFAULT_PRODUCTS);
+
+  const enrichedOrders = myOrders.map(order => {
+    const cleanProductName = String(order.productName || '').split(' - ')[0].trim().toLowerCase();
+    const product = products.find(p => p.name.toLowerCase().trim() === cleanProductName || String(p.id) === String(order.productName));
+    const isPaid = order.status === 'paid' || order.status === 'delivered';
+    return {
+      id: order.id,
+      productName: order.productName,
+      amount: order.amount,
+      status: order.status,
+      key: isPaid ? order.key : null,
+      telegramLink: product?.telegramLink || 'https://t.me/neocheatsfiles',
+      videoLink: product?.videoLink || 'https://t.me/neocheatsvideos',
+      image: product?.image || 'images/abcd_panel.png',
+      createdAt: order.createdAt
+    };
+  });
+
+  res.json({ success: true, email, orders: enrichedOrders });
 });
 
 /* --- REFERRAL SYSTEM ENDPOINTS --- */

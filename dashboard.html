@@ -125,10 +125,13 @@
               </select>
             </div>
           </label>
+          <label>Panel Badges / Overlay Tags (Comma separated: e.g. FREEFIRE, ROOT, NON-ROOT, KERNEL, VIP)
+            <input type="text" id="badges" placeholder="FREEFIRE, ROOT, VIP" value="FREEFIRE, ROOT" required />
+          </label>
           <label>Telegram File Link (Panel Download Link)
             <input type="text" id="telegramLink" placeholder="https://t.me/neocheatsfiles or file URL" value="https://t.me/neocheatsfiles" required />
           </label>
-          <label>Panel Video Preview Link (YouTube/Telegram/Demo Link)
+          <label>🎥 How To Setup Video Link (YouTube/Telegram/Demo Link)
             <div style="display:flex; gap:8px;">
               <input type="text" id="videoLink" placeholder="https://t.me/neocheatsvideos or video URL" value="https://t.me/neocheatsvideos" required />
               <select onchange="if(this.value){ document.getElementById('videoLink').value = this.value; }" style="width:160px;">
@@ -139,9 +142,30 @@
             </div>
           </label>
           <label>Description<textarea id="description" placeholder="Short description..." required></textarea></label>
-          <div class="quick-row"><label>Duration 1<input type="text" id="plan1Name" value="1 Day" /></label><label>Price 1<input type="number" id="plan1Price" value="150" min="0" /></label></div>
-          <div class="quick-row"><label>Duration 2<input type="text" id="plan2Name" value="7 Days" /></label><label>Price 2<input type="number" id="plan2Price" value="500" min="0" /></label></div>
-          <div class="quick-row"><label>Duration 3<input type="text" id="plan3Name" value="30 Days" /></label><label>Price 3<input type="number" id="plan3Price" value="1200" min="0" /></label></div>
+          <div class="quick-row">
+            <label>Duration 1<input type="text" id="plan1Name" value="1 Day" /></label>
+            <label>Normal User Price 1 (₹)<input type="number" id="plan1Price" value="150" min="0" /></label>
+            <label style="grid-column: span 2; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px; border-radius:4px;">
+              🏷️ Reseller Partner Price 1 (₹)
+              <input type="number" id="plan1ResellerPrice" value="100" min="0" placeholder="e.g. 100" />
+            </label>
+          </div>
+          <div class="quick-row" style="margin-top:8px;">
+            <label>Duration 2<input type="text" id="plan2Name" value="7 Days" /></label>
+            <label>Normal User Price 2 (₹)<input type="number" id="plan2Price" value="500" min="0" /></label>
+            <label style="grid-column: span 2; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px; border-radius:4px;">
+              🏷️ Reseller Partner Price 2 (₹)
+              <input type="number" id="plan2ResellerPrice" value="350" min="0" placeholder="e.g. 350" />
+            </label>
+          </div>
+          <div class="quick-row" style="margin-top:8px;">
+            <label>Duration 3<input type="text" id="plan3Name" value="30 Days" /></label>
+            <label>Normal User Price 3 (₹)<input type="number" id="plan3Price" value="1200" min="0" /></label>
+            <label style="grid-column: span 2; background:#f0fdf4; border:1px solid #bbf7d0; padding:6px; border-radius:4px;">
+              🏷️ Reseller Partner Price 3 (₹)
+              <input type="number" id="plan3ResellerPrice" value="840" min="0" placeholder="e.g. 840" />
+            </label>
+          </div>
           <label>Pre-added License Keys Stock (1 Key per line)<textarea id="keysPool" placeholder="NEO-ABCD-KEY1&#10;NEO-ABCD-KEY2&#10;NEO-ABCD-KEY3" style="font-family:monospace; min-height:80px;"></textarea></label>
           <div class="actions"><button type="submit" class="button primary">Save Panel</button><button type="button" class="button secondary" id="resetFormBtn">Reset</button></div>
         </form>
@@ -496,15 +520,19 @@
       document.getElementById('name').value = panel.name;
       document.getElementById('category').value = panel.category;
       document.getElementById('image').value = panel.image || 'images/abcd_panel.png';
+      document.getElementById('badges').value = Array.isArray(panel.badges) ? panel.badges.join(', ') : 'FREEFIRE, ROOT';
       document.getElementById('telegramLink').value = panel.telegramLink || 'https://t.me/neocheatsfiles';
       document.getElementById('videoLink').value = panel.videoLink || 'https://t.me/neocheatsvideos';
       document.getElementById('description').value = panel.description || panel.desc || '';
       document.getElementById('plan1Name').value = panel.pricing[0]?.duration || '1 Day';
       document.getElementById('plan1Price').value = panel.pricing[0]?.price || 0;
+      document.getElementById('plan1ResellerPrice').value = panel.pricing[0]?.resellerPrice ?? Math.round((panel.pricing[0]?.price || 0) * 0.7);
       document.getElementById('plan2Name').value = panel.pricing[1]?.duration || '7 Days';
       document.getElementById('plan2Price').value = panel.pricing[1]?.price || 0;
+      document.getElementById('plan2ResellerPrice').value = panel.pricing[1]?.resellerPrice ?? Math.round((panel.pricing[1]?.price || 0) * 0.7);
       document.getElementById('plan3Name').value = panel.pricing[2]?.duration || '30 Days';
       document.getElementById('plan3Price').value = panel.pricing[2]?.price || 0;
+      document.getElementById('plan3ResellerPrice').value = panel.pricing[2]?.resellerPrice ?? Math.round((panel.pricing[2]?.price || 0) * 0.7);
       document.getElementById('keysPool').value = Array.isArray(panel.keysPool) ? panel.keysPool.join('\n') : '';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -522,19 +550,31 @@
       const name = document.getElementById('name').value.trim();
       const category = document.getElementById('category').value.trim();
       const image = document.getElementById('image').value.trim() || 'images/abcd_panel.png';
+      const badgesStr = document.getElementById('badges').value.trim() || 'FREEFIRE, ROOT';
+      const badges = badgesStr.split(',').map(b => b.trim().toUpperCase()).filter(Boolean);
       const telegramLink = document.getElementById('telegramLink').value.trim() || 'https://t.me/neocheatsfiles';
       const videoLink = document.getElementById('videoLink').value.trim() || 'https://t.me/neocheatsvideos';
       const description = document.getElementById('description').value.trim();
       const rawKeys = document.getElementById('keysPool').value;
       const keysPool = rawKeys.split(/\r?\n/).map(k => k.trim()).filter(Boolean);
+
+      const p1Price = Number(document.getElementById('plan1Price').value || 0);
+      const p1Reseller = Number(document.getElementById('plan1ResellerPrice').value ?? Math.round(p1Price * 0.7));
+
+      const p2Price = Number(document.getElementById('plan2Price').value || 0);
+      const p2Reseller = Number(document.getElementById('plan2ResellerPrice').value ?? Math.round(p2Price * 0.7));
+
+      const p3Price = Number(document.getElementById('plan3Price').value || 0);
+      const p3Reseller = Number(document.getElementById('plan3ResellerPrice').value ?? Math.round(p3Price * 0.7));
+
       const pricing = [
-        { duration: document.getElementById('plan1Name').value.trim() || '1 Day', price: Number(document.getElementById('plan1Price').value || 0) },
-        { duration: document.getElementById('plan2Name').value.trim() || '7 Days', price: Number(document.getElementById('plan2Price').value || 0) },
-        { duration: document.getElementById('plan3Name').value.trim() || '30 Days', price: Number(document.getElementById('plan3Price').value || 0) }
+        { duration: document.getElementById('plan1Name').value.trim() || '1 Day', price: p1Price, resellerPrice: p1Reseller },
+        { duration: document.getElementById('plan2Name').value.trim() || '7 Days', price: p2Price, resellerPrice: p2Reseller },
+        { duration: document.getElementById('plan3Name').value.trim() || '30 Days', price: p3Price, resellerPrice: p3Reseller }
       ];
 
       if (!name || !description) return;
-      const payload = { name, category, image, telegramLink, videoLink, description, pricing, keysPool, badges: ['NEW'], features: ['Instant Delivery'] };
+      const payload = { name, category, image, telegramLink, videoLink, description, pricing, keysPool, badges, features: ['Instant Delivery'] };
       const url = panelId ? `${API_BASE}/api/products/${panelId}` : `${API_BASE}/api/products`;
       const method = panelId ? 'PUT' : 'POST';
 
@@ -548,14 +588,18 @@
         document.getElementById('panelForm').reset();
         document.getElementById('panelId').value = '';
         document.getElementById('image').value = 'images/abcd_panel.png';
+        document.getElementById('badges').value = 'FREEFIRE, ROOT';
         document.getElementById('telegramLink').value = 'https://t.me/neocheatsfiles';
         document.getElementById('videoLink').value = 'https://t.me/neocheatsvideos';
         document.getElementById('plan1Name').value = '1 Day';
         document.getElementById('plan1Price').value = 150;
+        document.getElementById('plan1ResellerPrice').value = 100;
         document.getElementById('plan2Name').value = '7 Days';
         document.getElementById('plan2Price').value = 500;
+        document.getElementById('plan2ResellerPrice').value = 350;
         document.getElementById('plan3Name').value = '30 Days';
         document.getElementById('plan3Price').value = 1200;
+        document.getElementById('plan3ResellerPrice').value = 840;
         document.getElementById('keysPool').value = '';
         loadDashboard();
       }
@@ -565,14 +609,18 @@
       document.getElementById('panelForm').reset();
       document.getElementById('panelId').value = '';
       document.getElementById('image').value = 'images/abcd_panel.png';
+      document.getElementById('badges').value = 'FREEFIRE, ROOT';
       document.getElementById('telegramLink').value = 'https://t.me/neocheatsfiles';
       document.getElementById('videoLink').value = 'https://t.me/neocheatsvideos';
       document.getElementById('plan1Name').value = '1 Day';
       document.getElementById('plan1Price').value = 150;
+      document.getElementById('plan1ResellerPrice').value = 100;
       document.getElementById('plan2Name').value = '7 Days';
       document.getElementById('plan2Price').value = 500;
+      document.getElementById('plan2ResellerPrice').value = 350;
       document.getElementById('plan3Name').value = '30 Days';
       document.getElementById('plan3Price').value = 1200;
+      document.getElementById('plan3ResellerPrice').value = 840;
       document.getElementById('keysPool').value = '';
     });
 
