@@ -276,7 +276,12 @@
     </div>
 
     <section class="panel orders-panel">
-      <h3>Orders Received</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+        <h3 style="margin:0;">Orders Received & Generated Keys</h3>
+        <div style="width:100%; max-width:380px;">
+          <input type="text" id="orderKeySearchInput" placeholder="🔑 Search key, order ID, product name, or customer..." oninput="filterOrders()" style="padding:10px 14px; border-radius:8px;" />
+        </div>
+      </div>
       <div class="order-list" id="orderList"></div>
     </section>
   </div>
@@ -336,6 +341,9 @@
       loadDashboard();
     }
 
+    let allOrdersData = [];
+    let allProductsData = [];
+
     async function loadDashboard() {
       const res = await fetch(`${API_BASE}/api/dashboard/stats`, { headers: getHeaders() });
       if (res.status === 401) {
@@ -354,16 +362,33 @@
       renderAnalytics(stats);
 
       const productsRes = await fetch(`${API_BASE}/api/products`, { headers: getHeaders() });
-      const products = await productsRes.json();
-      renderList(products);
+      allProductsData = await productsRes.json();
+      renderList(allProductsData);
 
       const ordersRes = await fetch(`${API_BASE}/api/orders`, { headers: getHeaders() });
-      const orders = await ordersRes.json();
-      renderOrders(orders);
+      allOrdersData = await ordersRes.json();
+      filterOrders();
 
       await loadCategories();
       await loadSettings();
       await loadResellers();
+    }
+
+    function filterOrders() {
+      const query = (document.getElementById('orderKeySearchInput')?.value || '').toLowerCase().trim();
+      if (!query) {
+        renderOrders(allOrdersData);
+        return;
+      }
+      const filtered = allOrdersData.filter(o => 
+        (o.key && o.key.toLowerCase().includes(query)) ||
+        (o.id && o.id.toLowerCase().includes(query)) ||
+        (o.productName && o.productName.toLowerCase().includes(query)) ||
+        (o.customer && o.customer.toLowerCase().includes(query)) ||
+        (o.email && o.email.toLowerCase().includes(query)) ||
+        (o.phone && o.phone.toLowerCase().includes(query))
+      );
+      renderOrders(filtered);
     }
 
     /* --- CATEGORIES & SETTINGS MANAGEMENT --- */
@@ -394,10 +419,29 @@
         badge.style.cssText = "background:#fafaf8; border:1px solid var(--line); border-radius:6px; padding:6px 12px; display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:13px; text-transform:uppercase;";
         badge.innerHTML = `
           <span>${cat}</span>
-          <button type="button" onclick="deleteCategory('${cat}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:900; padding:0 2px;">&times;</button>
+          <button type="button" onclick="editCategory('${cat}')" title="Edit Category" style="background:none; border:none; color:var(--blue); cursor:pointer; font-weight:700; font-size:12px; padding:0 2px;">✏️</button>
+          <button type="button" onclick="deleteCategory('${cat}')" title="Delete Category" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:900; font-size:14px; padding:0 2px;">&times;</button>
         `;
         container.appendChild(badge);
       });
+    }
+
+    async function editCategory(oldName) {
+      const newName = prompt(`Enter new name for category '${oldName.toUpperCase()}':`, oldName);
+      if (!newName || !newName.trim() || newName.trim().toLowerCase() === oldName.toLowerCase()) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/categories/${encodeURIComponent(oldName)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', ...getHeaders() },
+          body: JSON.stringify({ newName: newName.trim() })
+        });
+        if (res.ok) {
+          loadCategories();
+        }
+      } catch (err) {
+        alert("Failed to edit category.");
+      }
     }
 
     function populateCategoryDropdowns(categories) {
@@ -421,7 +465,7 @@
     }
 
     async function deleteCategory(catName) {
-      if (!confirm(`Are you sure you want to delete category '${catName.toUpperCase()}'?`)) return;
+      if (!confirm(`⚠️ Are you sure you want to delete category '${catName.toUpperCase()}'?\nThis action cannot be undone.`)) return;
       try {
         const res = await fetch(`${API_BASE}/api/admin/categories/${encodeURIComponent(catName)}`, {
           method: 'DELETE',
@@ -786,6 +830,11 @@
     }
 
     async function deletePanel(id) {
+      const panel = allProductsData ? allProductsData.find(p => Number(p.id) === Number(id)) : null;
+      const panelName = panel ? panel.name : 'this panel';
+      if (!confirm(`⚠️ Are you sure you want to delete '${panelName}'?\nThis action cannot be undone.`)) {
+        return;
+      }
       const res = await fetch(`${API_BASE}/api/products/${id}`, { method: 'DELETE', headers: getHeaders() });
       if (res.ok) {
         loadDashboard();

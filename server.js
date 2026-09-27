@@ -851,6 +851,22 @@ app.delete('/api/admin/categories/:name', adminAuth, (req, res) => {
   res.json({ success: true, categories });
 });
 
+app.put('/api/admin/categories/:oldName', adminAuth, (req, res) => {
+  const oldName = String(req.params.oldName || '').trim().toLowerCase();
+  const { newName } = req.body || {};
+  if (!newName || !String(newName).trim()) {
+    return res.status(400).json({ success: false, message: 'New category name required' });
+  }
+  const cleanNew = String(newName).trim().toLowerCase();
+  let categories = getCategories();
+  const idx = categories.findIndex(c => String(c).toLowerCase() === oldName);
+  if (idx >= 0) {
+    categories[idx] = cleanNew;
+    writeJson(CATEGORIES_PATH, categories);
+  }
+  res.json({ success: true, categories });
+});
+
 /* --- GLOBAL SETTINGS API (e.g. How to Setup Video) --- */
 app.get('/api/settings', (req, res) => {
   const settings = getSettings();

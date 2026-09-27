@@ -166,7 +166,12 @@
 
     <!-- KEY GENERATION HISTORY LOG -->
     <div class="card">
-      <h3><i class="fa-solid fa-clock-rotate-left"></i> Key Generation History</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <h3 style="margin:0;"><i class="fa-solid fa-clock-rotate-left"></i> Key Generation History</h3>
+        <div style="width:100%; max-width:340px;">
+          <input type="text" id="resellerKeySearchInput" placeholder="🔑 Search key, product name, or duration..." oninput="filterResellerHistory()" class="form-control" style="padding:8px 12px; font-size:13px;" />
+        </div>
+      </div>
       <div style="overflow-x: auto;">
         <table class="history-table">
           <thead>
@@ -191,6 +196,7 @@
     const RES_AUTH_KEY = 'neo_reseller_auth';
     let authReseller = null;
     let availableProducts = [];
+    let allResellerHistoryData = [];
 
     function getAuthHeader() {
       if (!authReseller) return {};
@@ -322,16 +328,33 @@
     async function loadHistory() {
       const res = await fetch(`${API_BASE}/api/reseller/history`, { headers: getAuthHeader() });
       if (!res.ok) return;
-      const history = await res.json();
+      allResellerHistoryData = await res.json();
+      filterResellerHistory();
+    }
+
+    function filterResellerHistory() {
+      const query = (document.getElementById('resellerKeySearchInput')?.value || '').toLowerCase().trim();
       const tbody = document.getElementById('historyTbody');
       tbody.innerHTML = '';
 
-      if (!history.length) {
+      if (!allResellerHistoryData || !allResellerHistoryData.length) {
         tbody.innerHTML = '<tr><td colspan="5" style="color: var(--muted); text-align: center;">No keys generated yet.</td></tr>';
         return;
       }
 
-      history.forEach(item => {
+      const filtered = query ? allResellerHistoryData.filter(item => 
+        (item.key && item.key.toLowerCase().includes(query)) ||
+        (item.productName && item.productName.toLowerCase().includes(query)) ||
+        (item.duration && item.duration.toLowerCase().includes(query)) ||
+        (item.category && item.category.toLowerCase().includes(query))
+      ) : allResellerHistoryData;
+
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--muted); text-align: center;">No keys matching search criteria.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${new Date(item.generatedAt).toLocaleString()}</td>

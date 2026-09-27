@@ -911,7 +911,10 @@
 
             <!-- ORDERS & KEYS RESULT -->
             <div id="userOrdersResult" style="display: none; margin-top: 18px;">
-                <h4 style="font-size: 14px; font-weight: 800; margin-bottom: 10px;">Your Orders & Keys:</h4>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h4 style="font-size: 14px; font-weight: 800; margin:0;">Your Orders & Keys:</h4>
+                </div>
+                <input type="text" id="userKeySearchInput" placeholder="🔑 Search key, product name, or order ID..." oninput="filterUserOrdersList()" style="padding:8px 12px; margin-bottom:10px; width:100%; border-radius:8px; border:1px solid #cbd5e1; font-size:12px; outline:none;" />
                 <div id="userOrdersList" style="display: grid; gap: 10px; max-height: 240px; overflow-y: auto;"></div>
             </div>
         </div>
@@ -1455,52 +1458,72 @@
             btn.disabled = false;
         }
 
+        let allUserOrdersData = [];
+
         async function fetchUserOrdersList(email) {
             const resultBox = document.getElementById('userOrdersResult');
-            const list = document.getElementById('userOrdersList');
-
             try {
                 const res = await fetch(`${API_BASE}/api/user/orders?email=${encodeURIComponent(email)}`);
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    list.innerHTML = '';
+                    allUserOrdersData = data.orders || [];
                     resultBox.style.display = 'block';
-
-                    if (!data.orders || data.orders.length === 0) {
-                        list.innerHTML = `<div style="padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; text-align:center; color:#64748b;">No panel purchases found for '${email}'. Make sure you entered the correct email used during purchase.</div>`;
-                    } else {
-                        data.orders.forEach(order => {
-                            const isPaid = order.status === 'paid' || order.status === 'delivered';
-                            const statusHtml = isPaid
-                                ? `<span style="color:#28c76f; font-weight:800;">ACTIVE</span>`
-                                : `<span style="color:#f59e0b; font-weight:800;">PENDING PAYMENT</span>`;
-                            const keyDisplay = isPaid && order.key
-                                ? `<div style="font-family:monospace; font-weight:800; color:#28c76f; background:#000; padding:6px 10px; border-radius:6px; margin-top:4px; font-size:13px; word-break:break-all;">Key: ${order.key}</div>`
-                                : `<div style="color:#f59e0b; font-size:11px; margin-top:4px;">⏳ Key unlocks after Admin approves payment</div>`;
-
-                            list.innerHTML += `
-                                <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px; border-radius:8px; text-align:left;">
-                                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                                        <strong>${order.productName}</strong>
-                                        ${statusHtml}
-                                    </div>
-                                    <small style="color:#64748b; display:block; margin-top:2px;">Order ID: ${order.id} • Amount: ₹${order.amount}</small>
-                                    ${keyDisplay}
-                                    <div style="display:flex; gap:8px; margin-top:8px;">
-                                        <a href="${order.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="font-size:11px; text-decoration:none; color:#0088cc; font-weight:700;">📁 File Link</a>
-                                        <a href="${order.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="font-size:11px; text-decoration:none; color:#ef4444; font-weight:700;">🎬 Setup Video</a>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
+                    filterUserOrdersList();
                 } else {
                     showToast(data.message || "Could not fetch orders.");
                 }
             } catch (err) {
                 showToast("Server connection error.");
             }
+        }
+
+        function filterUserOrdersList() {
+            const list = document.getElementById('userOrdersList');
+            if (!list) return;
+            const query = (document.getElementById('userKeySearchInput')?.value || '').toLowerCase().trim();
+            list.innerHTML = '';
+
+            if (!allUserOrdersData || allUserOrdersData.length === 0) {
+                list.innerHTML = `<div style="padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; text-align:center; color:#64748b;">No panel purchases found for '${loggedUserEmail}'. Make sure you entered the correct email used during purchase.</div>`;
+                return;
+            }
+
+            const filtered = query ? allUserOrdersData.filter(order =>
+                (order.key && order.key.toLowerCase().includes(query)) ||
+                (order.id && order.id.toLowerCase().includes(query)) ||
+                (order.productName && order.productName.toLowerCase().includes(query))
+            ) : allUserOrdersData;
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="padding:12px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; text-align:center; color:#64748b;">No keys or orders matching '${query}'.</div>`;
+                return;
+            }
+
+            filtered.forEach(order => {
+                const isPaid = order.status === 'paid' || order.status === 'delivered';
+                const statusHtml = isPaid
+                    ? `<span style="color:#28c76f; font-weight:800;">ACTIVE</span>`
+                    : `<span style="color:#f59e0b; font-weight:800;">PENDING PAYMENT</span>`;
+                const keyDisplay = isPaid && order.key
+                    ? `<div style="font-family:monospace; font-weight:800; color:#28c76f; background:#000; padding:6px 10px; border-radius:6px; margin-top:4px; font-size:13px; word-break:break-all;">Key: ${order.key}</div>`
+                    : `<div style="color:#f59e0b; font-size:11px; margin-top:4px;">⏳ Key unlocks after Admin approves payment</div>`;
+
+                list.innerHTML += `
+                    <div style="background:#f8fafc; border:1px solid #cbd5e1; padding:12px; border-radius:8px; text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong>${order.productName}</strong>
+                            ${statusHtml}
+                        </div>
+                        <small style="color:#64748b; display:block; margin-top:2px;">Order ID: ${order.id} • Amount: ₹${order.amount}</small>
+                        ${keyDisplay}
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <a href="${order.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="font-size:11px; text-decoration:none; color:#0088cc; font-weight:700;">📁 File Link</a>
+                            <a href="${order.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="font-size:11px; text-decoration:none; color:#ef4444; font-weight:700;">🎬 Setup Video</a>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         function addToCartWithPlan(productId) {
