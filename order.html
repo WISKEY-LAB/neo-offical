@@ -98,22 +98,22 @@
   <div id="copyToast">>> KEY COPIED AUTOMATICALLY <<</div>
 
   <div class="card">
-    <div class="tag"><i class="fa-solid fa-circle-check"></i> Order Confirmed</div>
-    <h1 style="margin-top: 10px;">Key Delivered</h1>
-    <div class="small">Your panel access key is ready. Copy the key below and download the installer APK.</div>
+    <div class="tag" id="statusBadge" style="background: #f59e0b;"><i class="fa-solid fa-clock"></i> Payment Verification Pending</div>
+    <h1 id="pageTitle" style="margin-top: 10px;">Order Received</h1>
+    <div class="small" id="pageSubtitle">Admin will verify your payment. Once approved, your key and panel file link will be unlocked!</div>
 
     <div class="details">
       <div class="detail-row"><span>Product</span><strong id="productName">-</strong></div>
       <div class="detail-row"><span>Order ID</span><strong id="orderId">-</strong></div>
-      <div class="detail-row"><span>Total Paid</span><strong id="totalPrice">₹0</strong></div>
-      <div class="detail-row"><span>Status</span><strong style="color:#28c76f; font-weight:800;">ACTIVE / DELIVERED</strong></div>
+      <div class="detail-row"><span>Total Amount</span><strong id="totalPrice">₹0</strong></div>
+      <div class="detail-row"><span>Status</span><strong id="orderStatusText" style="color:#f59e0b; font-weight:800;">PENDING PAYMENT APPROVAL</strong></div>
     </div>
 
     <div class="small" style="font-weight:700;">YOUR LICENSE KEY:</div>
     <div class="key-box-container">
-      <div class="key-box" id="keyBox">--</div>
-      <button class="copy-btn" onclick="copyKeyToClipboard()">
-        <i class="fa-solid fa-copy"></i> Click to Copy Key
+      <div class="key-box" id="keyBox">⏳ Pending Payment Approval</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyKeyToClipboard()" style="opacity: 0.6; cursor: not-allowed;">
+        <i class="fa-solid fa-lock"></i> Key Unlocks After Payment Approval
       </button>
     </div>
 
@@ -121,9 +121,9 @@
       <a class="button primary" id="downloadApkBtn" href="https://t.me/neocheatsfiles" target="_blank" rel="noopener noreferrer">
         <i class="fa-solid fa-download"></i> Download Files / APK
       </a>
-      <a class="button secondary" href="https://t.me/neocheatsvideos" target="_blank" rel="noopener noreferrer">
-        <i class="fa-solid fa-circle-play"></i> Watch Panel Setup Video
-      </a>
+      <button class="button secondary" onclick="checkOrderStatus()" id="refreshBtn">
+        <i class="fa-solid fa-rotate-right"></i> Refresh Status
+      </button>
       <a href="index.html" class="button secondary">
         <i class="fa-solid fa-store"></i> Back to Store
       </a>
@@ -147,29 +147,111 @@
     const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
     const product = params.get('product') || 'Premium Panel';
     const total = params.get('total') || '0';
-    const key = params.get('key') || 'Loading key...';
     const orderId = params.get('order') || 'NEO-' + Date.now();
 
     document.getElementById('productName').textContent = product;
     document.getElementById('orderId').textContent = orderId;
     document.getElementById('totalPrice').textContent = '₹' + total;
-    document.getElementById('keyBox').textContent = key;
 
-    if (!params.get('key') && params.get('order')) {
-      fetch(`${API_BASE}/api/orders/${encodeURIComponent(params.get('order'))}`)
-        .then(response => response.ok ? response.json() : Promise.reject(new Error('Order not found')))
-        .then(order => {
-          document.getElementById('productName').textContent = order.productName;
-          document.getElementById('orderId').textContent = order.id;
-          document.getElementById('totalPrice').textContent = '₹' + order.amount;
-          document.getElementById('keyBox').textContent = order.key;
-        })
-        .catch(error => console.error(error));
+    let pollInterval = null;
+
+    async function checkOrderStatus() {
+      if (!orderId) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/order-status/${encodeURIComponent(orderId)}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!data || !data.success) return;
+
+        document.getElementById('productName').textContent = data.productName || product;
+        document.getElementById('totalPrice').textContent = '₹' + (data.amount || total);
+
+        const statusBadge = document.getElementById('statusBadge');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const orderStatusText = document.getElementById('orderStatusText');
+        const keyBox = document.getElementById('keyBox');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadApkBtn');
+
+        if (data.telegramLink) {
+          downloadBtn.href = data.telegramLink;
+        }
+
+        if (data.status === 'paid' || data.status === 'delivered') {
+          statusBadge.style.background = '#28c76f';
+          statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> PAYMENT VERIFIED & KEY DELIVERED`;
+          pageTitle.textContent = 'Key Delivered';
+          pageSubtitle.textContent = 'Your panel access key is ready. Copy the key below and download your panel file.';
+          orderStatusText.style.color = '#28c76f';
+          orderStatusText.textContent = 'ACTIVE / DELIVERED';
+          
+          keyBox.textContent = data.key || 'NEO-KEY-ACTIVE';
+          keyBox.style.color = '#38ef7d';
+          keyBox.style.borderColor = '#28c76f';
+
+          copyBtn.style.opacity = '1';
+          copyBtn.style.cursor = 'pointer';
+          copyBtn.innerHTML = `<i class="fa-solid fa-copy"></i> Click to Copy Key`;
+
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+          }
+        } else if (data.status === 'cancelled') {
+          statusBadge.style.background = '#ef4444';
+          statusBadge.innerHTML = `<i class="fa-solid fa-xmark"></i> ORDER CANCELLED`;
+          pageTitle.textContent = 'Order Cancelled';
+          pageSubtitle.textContent = 'Your payment was not approved or the order was cancelled by admin.';
+          orderStatusText.style.color = '#ef4444';
+          orderStatusText.textContent = 'CANCELLED / REJECTED';
+
+          keyBox.textContent = '❌ Order Cancelled';
+          keyBox.style.color = '#ef4444';
+          keyBox.style.borderColor = '#ef4444';
+
+          copyBtn.style.opacity = '0.5';
+          copyBtn.style.cursor = 'not-allowed';
+          copyBtn.innerHTML = `<i class="fa-solid fa-ban"></i> Key Unavailable`;
+
+          if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+          }
+        } else {
+          // Pending status
+          statusBadge.style.background = '#f59e0b';
+          statusBadge.innerHTML = `<i class="fa-solid fa-clock"></i> PAYMENT VERIFICATION PENDING`;
+          pageTitle.textContent = 'Payment Verification Pending';
+          pageSubtitle.textContent = 'Admin will verify your payment. Once approved, your key and panel file link will be unlocked!';
+          orderStatusText.style.color = '#f59e0b';
+          orderStatusText.textContent = 'PENDING ADMIN APPROVAL';
+
+          keyBox.textContent = '⏳ Pending Payment Approval';
+          keyBox.style.color = '#f59e0b';
+          keyBox.style.borderColor = '#f59e0b';
+
+          copyBtn.style.opacity = '0.6';
+          copyBtn.style.cursor = 'not-allowed';
+          copyBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Key Unlocks After Payment Approval`;
+        }
+      } catch (err) {
+        console.error('Error fetching order status:', err);
+      }
     }
+
+    // Initial check & auto polling
+    checkOrderStatus();
+    pollInterval = setInterval(checkOrderStatus, 4000);
 
     function copyKeyToClipboard() {
       const keyText = document.getElementById('keyBox').textContent.trim();
-      if (!keyText || keyText === '--' || keyText === 'Loading key...') return;
+      if (!keyText || keyText.includes('Pending') || keyText.includes('Cancelled') || keyText === '--') {
+        showToast("Key will unlock after Admin approves your payment!");
+        return;
+      }
 
       navigator.clipboard.writeText(keyText).then(() => {
         showToast(">> KEY COPIED AUTOMATICALLY <<");

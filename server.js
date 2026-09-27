@@ -28,6 +28,7 @@ const DEFAULT_PRODUCTS = [
     name: 'ABCD PANEL NON ROOT',
     category: 'non root panel',
     image: 'images/abcd_panel.png',
+    telegramLink: 'https://t.me/neocheatsfiles',
     badges: ['NON-ROOT', 'FREEFIRE'],
     desc: 'High performance non-root panel with ESP Champs & Silent Aim location tracking.',
     features: ['ESP Champs', 'AIMSILENT', 'Location ESP', '100% Non-Root Safe'],
@@ -43,6 +44,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Invisible X Kernel Panel Streamer',
     category: 'root panel',
     image: 'images/invisible_x.png',
+    telegramLink: 'https://t.me/neocheatsfiles',
     badges: ['ROOTED KERNEL', 'KERNEL VERSION'],
     desc: 'Kernel level rooted device panel with precision Aim Lock, Aimbot, and customizable FOV.',
     features: ['AIMLOCK & AIMBOT', 'AIMSILENT', 'Angel FOV 0-180°', 'Chest Rate 1-10', 'ESP LOCATION'],
@@ -58,6 +60,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Miguil iPhone iOS FF Panel',
     category: 'ios panel',
     image: 'images/miguel_ios.png',
+    telegramLink: 'https://t.me/neocheatsfiles',
     badges: ['IOS / IPAD', 'FREEFIRE'],
     desc: 'Exclusive iOS & iPad Free Fire panel featuring Silent Aim, Speed hack & Auto Fire.',
     features: ['SILENT AIM', 'AIMBOT', 'SPEED', 'AUTOFIRE', 'HEADSHOT', 'ESP ALL LOCATIONS'],
@@ -72,6 +75,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Rapid Core Brutal Panel',
     category: 'root panel',
     image: 'images/rapid_core.png',
+    telegramLink: 'https://t.me/neocheatsfiles',
     badges: ['BRUTAL', 'STATUS: INJECTED'],
     desc: 'Brutal mode panel loaded with Spin Bot, Enemy Pull, Aim Magnet, and Headshot sliders.',
     features: ['AIMBOT & AIMLOCK', 'AIMSILENT & AIMMAGNET', 'SPIN BOT', 'ENEMY PULL', 'Angle FOV 0-180°', 'Headshot 0-10'],
@@ -87,6 +91,7 @@ const DEFAULT_PRODUCTS = [
     name: 'Stricks BR Panel',
     category: 'root panel',
     image: 'images/stricks_br.png',
+    telegramLink: 'https://t.me/neocheatsfiles',
     badges: ['ROOT', 'FREEFIRE BR'],
     desc: 'Battle Royale panel overlay with Aim Magnet, FOV sliders, and Headshot rate tuning.',
     features: ['Aim Silent & Aim Magnet', 'Angle FOV Standard', 'Headshot Rate Tuning', 'Visuals & Exploits'],
@@ -139,6 +144,7 @@ function normalizeProduct(payload) {
     name: String(payload.name || 'New Panel').trim(),
     category: String(payload.category || 'non root panel').trim(),
     image: String(payload.image || 'images/abcd_panel.png').trim(),
+    telegramLink: String(payload.telegramLink || 'https://t.me/neocheatsfiles').trim(),
     badges: Array.isArray(payload.badges) ? payload.badges.map(String) : ['NEW'],
     desc: String(payload.description || payload.desc || 'Panel description').trim(),
     features: Array.isArray(payload.features) ? payload.features.map(String) : ['Instant Delivery'],
@@ -334,6 +340,31 @@ app.get('/api/orders/:id', adminAuth, (req, res) => {
   res.json(order);
 });
 
+app.get('/api/order-status/:id', (req, res) => {
+  const orders = readJson(ORDERS_PATH, []);
+  const order = orders.find(item => item.id === req.params.id);
+  if (!order) {
+    return res.status(404).json({ success: false, message: 'Order not found' });
+  }
+
+  const products = readJson(PRODUCTS_PATH, DEFAULT_PRODUCTS);
+  const cleanProductName = String(order.productName || '').split(' - ')[0].trim().toLowerCase();
+  const product = products.find(p => p.name.toLowerCase().trim() === cleanProductName || String(p.id) === String(order.productName));
+
+  const isPaid = order.status === 'paid' || order.status === 'delivered';
+  res.json({
+    success: true,
+    id: order.id,
+    productName: order.productName,
+    amount: order.amount,
+    status: order.status,
+    key: isPaid ? order.key : null,
+    telegramLink: product?.telegramLink || 'https://t.me/neocheatsfiles',
+    image: product?.image || 'images/abcd_panel.png',
+    createdAt: order.createdAt
+  });
+});
+
 app.patch('/api/orders/:id/status', adminAuth, (req, res) => {
   const orders = readJson(ORDERS_PATH, []);
   const order = orders.find(item => item.id === req.params.id);
@@ -358,10 +389,10 @@ app.post('/api/payments/phonepe', keyGenLimiter, async (req, res) => {
   }
   if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY || !PHONEPE_SALT_INDEX || PHONEPE_SALT_KEY.includes('your_phonepe_salt_key') || PHONEPE_SALT_KEY === '') {
     const orders = readJson(ORDERS_PATH, []);
-    const order = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod: 'phonepe_demo', status: 'paid' });
+    const order = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod: 'phonepe_demo', status: 'pending' });
     orders.unshift(order);
     writeJson(ORDERS_PATH, orders);
-    const downloadUrl = `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&key=${encodeURIComponent(order.key)}&order=${encodeURIComponent(order.id)}`;
+    const downloadUrl = `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&order=${encodeURIComponent(order.id)}`;
     return res.json({ success: true, redirectUrl: downloadUrl, isDemoMode: true });
   }
 
@@ -428,7 +459,7 @@ app.get('/api/payments/phonepe/return', async (req, res) => {
       order.status = 'paid';
       order.updatedAt = new Date().toISOString();
       writeJson(ORDERS_PATH, orders);
-      return res.redirect(`/order.html?product=${encodeURIComponent(order.productName)}&total=${order.amount}&key=${encodeURIComponent(order.key)}&order=${encodeURIComponent(order.id)}`);
+      return res.redirect(`/order.html?product=${encodeURIComponent(order.productName)}&total=${order.amount}&order=${encodeURIComponent(order.id)}`);
     }
   } catch (error) {
     console.error('PhonePe status check failed:', error.message);
@@ -437,7 +468,7 @@ app.get('/api/payments/phonepe/return', async (req, res) => {
 });
 
 app.post('/api/orders', (req, res) => {
-  const { productName, total, amount, customer, email, phone, discord, payerUpiId, paymentMethod, status } = req.body;
+  const { productName, total, amount, customer, email, phone, discord, payerUpiId, paymentMethod } = req.body;
   const finalTotal = Number(total ?? amount ?? 0);
 
   if (!productName || !finalTotal || !customer || !email || !phone) {
@@ -445,18 +476,17 @@ app.post('/api/orders', (req, res) => {
   }
 
   const orders = readJson(ORDERS_PATH, []);
-  const newOrder = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod, status: String(status || 'pending') });
+  const newOrder = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod, status: 'pending' });
 
   orders.unshift(newOrder);
   writeJson(ORDERS_PATH, orders);
   res.status(201).json({
     success: true,
     orderId: newOrder.id,
-    key: newOrder.key,
     amount: finalTotal,
     product: productName,
     order: newOrder,
-    downloadUrl: `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&key=${encodeURIComponent(newOrder.key)}&order=${encodeURIComponent(newOrder.id)}`
+    downloadUrl: `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&order=${encodeURIComponent(newOrder.id)}`
   });
 });
 
