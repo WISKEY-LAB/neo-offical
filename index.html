@@ -111,7 +111,8 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .search-box {
@@ -121,7 +122,7 @@
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 4px 12px;
-            width: 240px;
+            width: 220px;
         }
 
         .search-box input {
@@ -175,20 +176,12 @@
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
-        /* --- FULL-COVER HERO SECTION (IMAGE BACKGROUND PURA COVER) --- */
+        /* --- FULL-COVER HERO SECTION --- */
         .hero-banner {
             width: 100%;
             min-height: 420px;
@@ -257,7 +250,7 @@
         /* --- LARGER PRODUCT CARDS --- */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 28px;
         }
 
@@ -307,6 +300,7 @@
             display: flex;
             gap: 6px;
             z-index: 2;
+            flex-wrap: wrap;
         }
 
         .badge-tag {
@@ -323,13 +317,6 @@
             color: #ffffff;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(20, 184, 166, 0.5);
-        }
-
-        .badge-tag.purple {
-            background: rgba(79, 70, 229, 0.92);
-            color: #ffffff;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(99, 102, 241, 0.5);
         }
 
         .card-body {
@@ -414,10 +401,6 @@
             transition: border-color 0.2s;
         }
 
-        .duration-select:focus, .duration-select:hover {
-            border-color: #000000;
-        }
-
         .price-unit {
             font-size: 12px;
             font-weight: 500;
@@ -464,13 +447,8 @@
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .drawer-overlay.active {
-            display: block;
-        }
-
-        .drawer-overlay.active .drawer-content {
-            transform: translateX(0);
-        }
+        .drawer-overlay.active { display: block; }
+        .drawer-overlay.active .drawer-content { transform: translateX(0); }
 
         .drawer-header {
             display: flex;
@@ -497,8 +475,7 @@
             text-align: left;
         }
 
-        .filter-item:hover,
-        .filter-item.active {
+        .filter-item:hover, .filter-item.active {
             background: #000000;
             color: #ffffff;
             border-color: #000000;
@@ -521,13 +498,8 @@
             flex-direction: column;
         }
 
-        .drawer-overlay.active-cart {
-            display: block;
-        }
-
-        .drawer-overlay.active-cart .cart-drawer-content {
-            transform: translateX(0);
-        }
+        .drawer-overlay.active-cart { display: block; }
+        .drawer-overlay.active-cart .cart-drawer-content { transform: translateX(0); }
 
         .cart-items-container {
             flex: 1;
@@ -548,15 +520,8 @@
             background: #f8fafc;
         }
 
-        .cart-item-info h5 {
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        .cart-item-info p {
-            color: var(--text-muted);
-            font-size: 11px;
-        }
+        .cart-item-info h5 { font-weight: 700; font-size: 13px; }
+        .cart-item-info p { color: var(--text-muted); font-size: 11px; }
 
         .cart-remove-btn {
             color: #ef4444;
@@ -601,72 +566,12 @@
             color: var(--text-muted);
         }
 
-        .feature-list {
-            margin: 12px 0;
-            padding-left: 18px;
-        }
+        .feature-list { margin: 12px 0; padding-left: 18px; }
+        .feature-list li { font-size: 12px; margin-bottom: 4px; color: #334155; }
 
-        .feature-list li {
-            font-size: 12px;
-            margin-bottom: 4px;
-            color: #334155;
-        }
-
-        /* FIXED CLEAR QR CODE DISPLAY WITH PROVIDED PICS */
-        .qr-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin: 16px 0;
-            text-align: center;
-        }
-
-        .qr-card {
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            background: #ffffff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-        }
-
-        .qr-img-wrap {
-            width: 100%;
-            height: 180px;
-            background: #0f172a;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .qr-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #334155;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 9px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            outline: none;
-        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; color: #334155; }
+        .form-group input { width: 100%; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; }
 
         /* TOAST NOTIFICATION SYSTEM */
         .toast {
@@ -686,18 +591,11 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* FOOTER DEALING */
+        /* FOOTER */
         footer {
             background: #ffffff;
             border-top: 1px solid var(--border-color);
@@ -719,16 +617,8 @@
             background: #f8fafc;
         }
 
-        .deal-box h4 {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .deal-box p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .deal-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .deal-box p { font-size: 12px; color: var(--text-muted); }
 
         .footer-copy {
             text-align: center;
@@ -745,49 +635,16 @@
             background: #ffffff;
         }
 
-        .support-box h4 {
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .support-box a {
-            display: block;
-            color: var(--text-main);
-            font-size: 12px;
-            margin-top: 5px;
-            text-decoration: none;
-        }
-
-        .support-box a:hover {
-            text-decoration: underline;
-        }
+        .support-box h4 { font-size: 14px; margin-bottom: 8px; }
+        .support-box a { display: block; color: var(--text-main); font-size: 12px; margin-top: 5px; text-decoration: none; }
+        .support-box a:hover { text-decoration: underline; }
 
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .header-actions {
-                justify-content: space-between;
-            }
-
-            .search-box {
-                width: 100%;
-            }
-
-            .hero-banner {
-                min-height: 320px;
-                padding: 50px 5%;
-            }
-
-            .hero-text h1 {
-                font-size: 28px;
-            }
-
-            .qr-section {
-                grid-template-columns: 1fr;
-            }
+            header { flex-direction: column; align-items: stretch; }
+            .header-actions { justify-content: space-between; }
+            .search-box { width: 100%; }
+            .hero-banner { min-height: 320px; padding: 50px 5%; }
+            .hero-text h1 { font-size: 28px; }
         }
     </style>
 </head>
@@ -815,10 +672,22 @@
                 </svg>
             </button>
 
+            <!-- REFER & EARN ₹10 BUTTON -->
+            <button class="action-icon-btn" onclick="openReferralModal()" title="Refer & Earn ₹10" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #7367f0;">
+                <i class="fa-solid fa-gift"></i>
+                Refer ₹10
+            </button>
+
+            <!-- BUY RESELLER (₹100) BUTTON -->
+            <button class="action-icon-btn" onclick="openBuyResellerModal()" title="Buy Reseller Membership ₹100" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #28c76f;">
+                <i class="fa-solid fa-crown"></i>
+                Buy Reseller (₹100)
+            </button>
+
             <!-- RESELLER PORTAL BUTTON -->
             <a class="action-icon-btn" href="reseller.html" target="_blank" title="Reseller Portal" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; text-decoration: none;">
                 <i class="fa-solid fa-handshake"></i>
-                Reseller
+                Reseller Portal
             </a>
 
             <!-- ADMIN LOGIN BUTTON -->
@@ -846,11 +715,13 @@
     <section class="hero-banner">
         <div class="hero-text">
             <h1>NEO OFFICIAL Gaming Store</h1>
-            <p>Experience high-grade Root, Non-Root, Streamer, and iOS Panels with automated instant key delivery setup.
-            </p>
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <p>Experience high-grade Root, Non-Root, Streamer, and iOS Panels with automated instant key delivery setup.</p>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
                 <button class="btn" style="padding: 12px 24px; font-size: 13px;" onclick="toggleDrawer(true)">
                     <i class="fa-solid fa-list-check"></i> Explore Categories
+                </button>
+                <button class="btn" style="padding: 12px 24px; font-size: 13px; background: #28c76f; color: #ffffff; border: 1px solid #28c76f;" onclick="openBuyResellerModal()">
+                    <i class="fa-solid fa-user-plus"></i> Become Reseller (₹100 Only)
                 </button>
                 <button class="btn" style="padding: 12px 24px; font-size: 13px; background: #ffffff; color: #000000; border: 1px solid #000000;" onclick="document.getElementById('tutorialModal').style.display='flex'">
                     <i class="fa-solid fa-circle-play" style="color: #ef4444;"></i> How To Buy & Setup
@@ -862,7 +733,7 @@
     <!-- MAIN PRODUCTS DISPLAY -->
     <div class="main-container">
         <div class="section-bar">
-            <h2 style="font-size: 18px; font-weight: 800;" id="categoryTitle">All Products (7)</h2>
+            <h2 style="font-size: 18px; font-weight: 800;" id="categoryTitle">All Products</h2>
             <button class="filter-toggle-btn" onclick="toggleDrawer(true)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="4" y1="21" x2="4" y2="14" />
@@ -892,13 +763,10 @@
                 <span style="font-size: 20px; cursor: pointer;" onclick="closeAllDrawers()">&times;</span>
             </div>
             <div class="filter-list">
-                <button class="filter-item active" onclick="selectCategory('all', 'All Products', this)">All
-                    Panels</button>
+                <button class="filter-item active" onclick="selectCategory('all', 'All Products', this)">All Panels</button>
                 <button class="filter-item" onclick="selectCategory('crackpanel', 'Crackpanel', this)">Crackpanel</button>
-                <button class="filter-item" onclick="selectCategory('root panel', 'Root Panels', this)">Root
-                    Panel</button>
-                <button class="filter-item" onclick="selectCategory('non root panel', 'Non-Root Panels', this)">Non-Root
-                    Panel</button>
+                <button class="filter-item" onclick="selectCategory('root panel', 'Root Panels', this)">Root Panel</button>
+                <button class="filter-item" onclick="selectCategory('non root panel', 'Non-Root Panels', this)">Non-Root Panel</button>
                 <button class="filter-item" onclick="selectCategory('ios panel', 'iOS Panels', this)">iOS Panel</button>
             </div>
         </div>
@@ -913,10 +781,9 @@
                 <!-- Cart items populate here -->
             </div>
             <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
-                <div
-                    style="display: flex; justify-content: space-between; font-weight: 800; font-size: 16px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 16px; margin-bottom: 12px;">
                     <span>Total:</span>
-                    <span id="cartTotalPrice">$0</span>
+                    <span id="cartTotalPrice">₹0</span>
                 </div>
                 <button class="btn" style="width: 100%;" onclick="proceedCartCheckout()">Checkout Cart</button>
             </div>
@@ -936,7 +803,7 @@
             </div>
 
             <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
-                <div id="qvPrice" style="font-size: 18px; font-weight: 800;">$0</div>
+                <div id="qvPrice" style="font-size: 18px; font-weight: 800;">₹0</div>
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-outline" id="qvCartBtn">Add to Cart</button>
                     <button class="btn" id="qvBuyBtn">Buy Now</button>
@@ -945,13 +812,82 @@
         </div>
     </div>
 
+    <!-- REFERRAL & EARN ₹10 MODAL -->
+    <div class="modal-bg" id="referralModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <span class="close-btn" onclick="closeModal('referralModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div style="width: 50px; height: 50px; background: #7367f0; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px;">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 800;">Refer & Earn ₹10 per Panel</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Apne dosto ko referral code do. Jab bhi vo koi panel buy karenge, aapke account me ₹10 jud jayenge!</p>
+            </div>
+            <form onsubmit="handleReferralRegister(event)">
+                <div class="form-group">
+                    <label>YOUR GMAIL EMAIL ADDRESS</label>
+                    <input type="email" id="refUserEmail" placeholder="yourgmail@gmail.com" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; background: #7367f0;">Get My Referral Code & Link</button>
+            </form>
+            <div id="referralInfoResult" style="display: none; margin-top: 16px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted);">YOUR UNIQUE REFERRAL CODE:</div>
+                <strong style="font-size: 22px; color: #7367f0; font-family: monospace; display: block; margin: 6px 0;" id="refCodeDisplay">REF-123456</strong>
+                <div style="display: flex; justify-content: space-around; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                    <div><span style="color: var(--text-muted); font-size: 11px;">Referral Earnings:</span> <strong style="color: #28c76f;" id="refBalanceDisplay">₹0</strong></div>
+                    <div><span style="color: var(--text-muted); font-size: 11px;">Total Referrals:</span> <strong style="color: #000;" id="refCountDisplay">0</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUY RESELLER MEMBERSHIP (₹100) MODAL -->
+    <div class="modal-bg" id="buyResellerModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <span class="close-btn" onclick="closeModal('buyResellerModal')">&times;</span>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div style="width: 50px; height: 50px; background: #28c76f; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px;">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 800;">Buy Reseller License (₹100)</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">₹100 pay karke hamara Official Reseller baniye. Reseller banne ke baad aapko saare panels discount (saste rate) me dikhenge!</p>
+            </div>
+            <form onsubmit="handleBuyReseller(event)">
+                <div class="form-group">
+                    <label>CHOOSE RESELLER USERNAME</label>
+                    <input type="text" id="buyResUser" placeholder="e.g. myreseller1" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>CHOOSE PASSWORD</label>
+                    <input type="password" id="buyResPass" placeholder="••••••••" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label>YOUR NAME / BRAND NAME</label>
+                    <input type="text" id="buyResName" placeholder="e.g. Rahul Gamer" required>
+                </div>
+                <div class="form-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" id="buyResEmail" placeholder="yourname@gmail.com" required>
+                </div>
+                <div class="form-group">
+                    <label>WHATSAPP NUMBER</label>
+                    <input type="text" id="buyResPhone" placeholder="+91 9876543210" required>
+                </div>
+                <div class="form-group">
+                    <label>YOUR UPI ID FOR ₹100 PAYMENT</label>
+                    <input type="text" id="buyResUpi" placeholder="e.g. yourname@oksbi" required>
+                </div>
+                <button type="submit" class="btn" id="buyResSubmitBtn" style="width: 100%; background: #28c76f; font-weight: 800;">Pay ₹100 & Activate Reseller Now</button>
+            </form>
+        </div>
+    </div>
+
     <!-- CLEAN ONLINE CHECKOUT -->
     <div class="modal-bg" id="checkoutModal">
         <div class="modal-card">
             <span class="close-btn" onclick="closeModal('checkoutModal')">&times;</span>
             <h3 style="font-size: 18px; font-weight: 800;">Checkout & Payment</h3>
-            <p id="checkoutProductTitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
-                Selected Items</p>
+            <p id="checkoutProductTitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Selected Items</p>
 
             <div class="form-group">
                 <label>PAYMENT METHOD</label>
@@ -979,40 +915,17 @@
 
             <div class="form-group">
                 <label>WHATSAPP NUMBER</label>
-                <input type="text" id="custWhatsapp" placeholder="+92 300 0000000">
+                <input type="text" id="custWhatsapp" placeholder="+91 9000000000">
             </div>
 
-            <button class="btn" id="submitOrderBtn" style="width: 100%; margin-top: 10px;"
-                onclick="confirmOrderWithWebhook()">Submit Order Deal</button>
+            <div class="form-group">
+                <label>REFERRAL CODE / REFERRER EMAIL (OPTIONAL - Referrer gets ₹10)</label>
+                <input type="text" id="custReferrerCode" placeholder="e.g. REF-ABC123 or referrer@gmail.com">
+            </div>
+
+            <button class="btn" id="submitOrderBtn" style="width: 100%; margin-top: 10px;" onclick="confirmOrderWithWebhook()">Submit Order Deal</button>
         </div>
     </div>
-
-    <!-- FOOTER DEALING -->
-    <footer>
-        <div class="footer-deals">
-            <div class="deal-box">
-                <h4>100% Secure Dealing</h4>
-                <p>All deals verified via Discord and WhatsApp support directly.</p>
-            </div>
-            <div class="deal-box">
-                <h4>Instant Key Delivery</h4>
-                <p>Receive configuration key within 5-10 minutes after payment verification.</p>
-            </div>
-            <div class="deal-box">
-                <h4>24/7 Setup Assistance</h4>
-                <p>Full installation support for Root, Non-Root, and iOS panels.</p>
-            </div>
-            <div class="support-box">
-                <h4>NEO OFFICIAL Support</h4>
-                <a href="https://t.me/Mandeted999" target="_blank" rel="noopener noreferrer">Telegram: @Mandeted999</a>
-                <a href="https://discord.com/users/anujyadav3456" target="_blank" rel="noopener noreferrer">Discord: anujyadav3456</a>
-                <a href="https://discord.gg/ZeFd5qkkZ" target="_blank" rel="noopener noreferrer">Main Discord Channel</a>
-                <a href="https://t.me/neocheats9" target="_blank" rel="noopener noreferrer">Main Telegram Channel</a>
-                <a href="https://t.me/neocheatsfiles" target="_blank" rel="noopener noreferrer">Files Channel</a>
-                <a href="https://discord.gg/Tm6zYbm9R" target="_blank" rel="noopener noreferrer">Discord Files</a>
-                <a href="javascript:void(0)" onclick="openAdminPanelAccess()" style="font-weight:700; color:#000; margin-top:8px; display:inline-block; border-top:1px solid #eee; padding-top:6px;">🔐 Admin Dashboard Login</a>
-            </div>
-        </div>
 
     <!-- ADMIN LOGIN MODAL -->
     <div class="modal-bg" id="adminLoginModal">
@@ -1038,6 +951,9 @@
                 </div>
                 <button type="submit" class="btn" id="adminModalSubmitBtn" style="width: 100%; margin-top: 10px;">Login to Admin Dashboard</button>
             </form>
+        </div>
+    </div>
+
     <!-- HOW TO BUY & SETUP TUTORIAL MODAL -->
     <div class="modal-bg" id="tutorialModal">
         <div class="modal-card" style="max-width: 520px;">
@@ -1069,10 +985,38 @@
         </div>
     </div>
 
-    <!-- FLOATING TELEGRAM SUPPORT BUTTON (BANTI BHAIYA STYLE) -->
-    <a href="https://t.me/Mandeted999" target="_blank" class="floating-telegram-btn" title="Contact Telegram Support">
-        <i class="fa-brands fa-telegram"></i>
-    </a>
+    <!-- FOOTER DEALING -->
+    <footer>
+        <div class="footer-deals">
+            <div class="deal-box">
+                <h4>100% Secure Dealing</h4>
+                <p>All deals verified via Discord and WhatsApp support directly.</p>
+            </div>
+            <div class="deal-box">
+                <h4>Instant Key Delivery</h4>
+                <p>Receive configuration key within 5-10 minutes after payment verification.</p>
+            </div>
+            <div class="deal-box">
+                <h4>24/7 Setup Assistance</h4>
+                <p>Full installation support for Root, Non-Root, and iOS panels.</p>
+            </div>
+            <div class="support-box">
+                <h4>NEO OFFICIAL Support</h4>
+                <a href="https://t.me/Mandeted999" target="_blank" rel="noopener noreferrer">Telegram: @Mandeted999</a>
+                <a href="https://discord.com/users/anujyadav3456" target="_blank" rel="noopener noreferrer">Discord: anujyadav3456</a>
+                <a href="https://discord.gg/ZeFd5qkkZ" target="_blank" rel="noopener noreferrer">Main Discord Channel</a>
+                <a href="https://t.me/neocheats9" target="_blank" rel="noopener noreferrer">Main Telegram Channel</a>
+                <a href="https://t.me/neocheatsfiles" target="_blank" rel="noopener noreferrer">Files Channel</a>
+                <a href="https://discord.gg/Tm6zYbm9R" target="_blank" rel="noopener noreferrer">Discord Files</a>
+                <a href="javascript:void(0)" onclick="openAdminPanelAccess()" style="font-weight:700; color:#000; margin-top:8px; display:inline-block; border-top:1px solid #eee; padding-top:6px;">🔐 Admin Dashboard Login</a>
+            </div>
+        </div>
+
+        <!-- FLOATING TELEGRAM SUPPORT BUTTON -->
+        <a href="https://t.me/Mandeted999" target="_blank" class="floating-telegram-btn" title="Contact Telegram Support">
+            <i class="fa-brands fa-telegram"></i>
+        </a>
+
         <div class="footer-copy">
             &copy; 2026 NEO OFFICIAL. All Rights Reserved. Clean White Edition.
         </div>
@@ -1087,6 +1031,8 @@
                 name: "ABCD PANEL NON ROOT",
                 category: "non root panel",
                 image: "images/abcd_panel.png",
+                telegramLink: "https://t.me/neocheatsfiles",
+                videoLink: "https://t.me/neocheatsvideos",
                 badges: ["NON-ROOT", "FREEFIRE"],
                 desc: "High performance non-root panel with ESP Champs & Silent Aim location tracking.",
                 features: ["ESP Champs", "AIMSILENT", "Location ESP", "100% Non-Root Safe"],
@@ -1102,6 +1048,8 @@
                 name: "Invisible X Kernel Panel Streamer",
                 category: "root panel",
                 image: "images/invisible_x.png",
+                telegramLink: "https://t.me/neocheatsfiles",
+                videoLink: "https://t.me/neocheatsvideos",
                 badges: ["ROOTED KERNEL", "KERNEL VERSION"],
                 desc: "Kernel level rooted device panel with precision Aim Lock, Aimbot, and customizable FOV.",
                 features: ["AIMLOCK & AIMBOT", "AIMSILENT", "Angel FOV 0-180°", "Chest Rate 1-10", "ESP LOCATION"],
@@ -1117,6 +1065,8 @@
                 name: "Miguil iPhone iOS FF Panel",
                 category: "ios panel",
                 image: "images/miguel_ios.png",
+                telegramLink: "https://t.me/neocheatsfiles",
+                videoLink: "https://t.me/neocheatsvideos",
                 badges: ["IOS / IPAD", "FREEFIRE"],
                 desc: "Exclusive iOS & iPad Free Fire panel featuring Silent Aim, Speed hack & Auto Fire.",
                 features: ["SILENT AIM", "AIMBOT", "SPEED", "AUTOFIRE", "HEADSHOT", "ESP ALL LOCATIONS"],
@@ -1129,8 +1079,10 @@
             {
                 id: 4,
                 name: "Rapid Core Brutal Panel",
-                category: "mobile panel",
+                category: "root panel",
                 image: "images/rapid_core.png",
+                telegramLink: "https://t.me/neocheatsfiles",
+                videoLink: "https://t.me/neocheatsvideos",
                 badges: ["BRUTAL", "STATUS: INJECTED"],
                 desc: "Brutal mode panel loaded with Spin Bot, Enemy Pull, Aim Magnet, and Headshot sliders.",
                 features: ["AIMBOT & AIMLOCK", "AIMSILENT & AIMMAGNET", "SPIN BOT", "ENEMY PULL", "Angle FOV 0-180°", "Headshot 0-10"],
@@ -1146,6 +1098,8 @@
                 name: "Stricks BR Panel",
                 category: "root panel",
                 image: "images/stricks_br.png",
+                telegramLink: "https://t.me/neocheatsfiles",
+                videoLink: "https://t.me/neocheatsvideos",
                 badges: ["ROOT", "FREEFIRE BR"],
                 desc: "Battle Royale panel overlay with Aim Magnet, FOV sliders, and Headshot rate tuning.",
                 features: ["Aim Silent & Aim Magnet", "Angle FOV Standard", "Headshot Rate Tuning", "Visuals & Exploits"],
@@ -1161,11 +1115,19 @@
         let selectedCategory = 'all';
         let currentCheckoutDetails = { title: "", amount: 0 };
         let selectedDurations = {}; // Store chosen index for each product ID
+        let isResellerActive = localStorage.getItem('neo_reseller_active') === 'true';
 
         // Initialize default selected durations
         products.forEach(p => {
             selectedDurations[p.id] = 0;
         });
+
+        function getDisplayPrice(originalPrice) {
+            if (isResellerActive) {
+                return Math.max(1, Math.round(originalPrice * 0.75)); // 25% reseller discount
+            }
+            return originalPrice;
+        }
 
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
@@ -1179,19 +1141,24 @@
                 if (matchesCat && matchesSearch) {
                     const activeIndex = selectedDurations[p.id] || 0;
                     const activeTier = p.pricing[activeIndex] || p.pricing[0];
+                    const activePrice = getDisplayPrice(activeTier.price);
 
-                    let optionsHTML = p.pricing.map((tier, idx) => `
-                        <option value="${idx}" ${idx === activeIndex ? 'selected' : ''}>
-                            ${tier.duration} - ₹${tier.price}
-                        </option>
-                    `).join('');
+                    let optionsHTML = p.pricing.map((tier, idx) => {
+                        const priceDisplay = getDisplayPrice(tier.price);
+                        return `
+                            <option value="${idx}" ${idx === activeIndex ? 'selected' : ''}>
+                                ${tier.duration} - ₹${priceDisplay} ${isResellerActive ? '(Reseller Rate)' : ''}
+                            </option>
+                        `;
+                    }).join('');
 
                     let stockCount = Array.isArray(p.keysPool) ? p.keysPool.length : 0;
                     let stockBadge = stockCount > 0
                         ? `<span class="badge-tag green" style="background:#28c76f; color:#ffffff; font-weight:800;">STOCK: ${stockCount} KEYS</span>`
                         : `<span class="badge-tag cyan" style="background:#0f172a; color:#ffffff; font-weight:700;">INSTANT DELIVERY</span>`;
 
-                    let badgeHTML = p.badges.map(b => `<span class="badge-tag cyan">${b}</span>`).join(' ') + ' ' + stockBadge;
+                    let resellerBadge = isResellerActive ? `<span class="badge-tag" style="background:#7367f0; color:#fff; font-weight:800;">RESELLER DISCOUNT</span>` : '';
+                    let badgeHTML = p.badges.map(b => `<span class="badge-tag cyan">${b}</span>`).join(' ') + ' ' + stockBadge + ' ' + resellerBadge;
 
                     grid.innerHTML += `
                         <div class="product-card">
@@ -1204,6 +1171,17 @@
                             <div class="card-body">
                                 <div class="product-name">${p.name}</div>
                                 <div class="product-desc">${p.desc}</div>
+
+                                <!-- VIDEO AND FILE LINKS DISPLAY RIGHT HERE IN FRONT -->
+                                <div style="display: flex; gap: 6px; margin-top: 10px; margin-bottom: 8px;">
+                                    <a href="${p.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="flex:1; text-decoration:none; background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; padding:6px 8px; border-radius:6px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+                                        <i class="fa-solid fa-file-arrow-down" style="color:#0088cc;"></i> File Link
+                                    </a>
+                                    <a href="${p.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="flex:1; text-decoration:none; background:#fef2f2; color:#991b1b; border:1px solid #fca5a5; padding:6px 8px; border-radius:6px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+                                        <i class="fa-solid fa-circle-play" style="color:#ef4444;"></i> Video Link
+                                    </a>
+                                </div>
+
                                 <div class="duration-selector-wrap">
                                     <label class="duration-label">Select Plan Duration</label>
                                     <select class="duration-select" onchange="changeDuration(${p.id}, this.value)">
@@ -1212,7 +1190,9 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <div class="price" id="cardPrice-${p.id}">₹${activeTier.price}<span class="price-unit">/${activeTier.duration}</span></div>
+                                <div class="price" id="cardPrice-${p.id}">
+                                    ₹${activePrice}<span class="price-unit">/${activeTier.duration}</span>
+                                </div>
                                 <div class="card-actions">
                                     <button class="btn-outline" onclick="addToCartWithPlan(${p.id})">+ Cart</button>
                                     <button class="btn-outline" onclick="openQuickView(${p.id})">View</button>
@@ -1243,8 +1223,9 @@
             if (p) {
                 const tier = p.pricing[index];
                 const priceEl = document.getElementById(`cardPrice-${productId}`);
+                const displayPrice = getDisplayPrice(tier.price);
                 if (priceEl) {
-                    priceEl.innerHTML = `₹${tier.price}<span class="price-unit">/${tier.duration}</span>`;
+                    priceEl.innerHTML = `₹${displayPrice}<span class="price-unit">/${tier.duration}</span>`;
                 }
             }
         }
@@ -1255,10 +1236,11 @@
 
             const idx = selectedDurations[productId] || 0;
             const tier = p.pricing[idx] || p.pricing[0];
+            const price = getDisplayPrice(tier.price);
             const cartItem = {
                 id: p.id,
                 name: `${p.name} (${tier.duration})`,
-                price: tier.price,
+                price: price,
                 image: p.image
             };
 
@@ -1273,7 +1255,8 @@
 
             const idx = selectedDurations[productId] || 0;
             const tier = p.pricing[idx] || p.pricing[0];
-            openCheckout(`${p.name} - ${tier.duration}`, tier.price);
+            const price = getDisplayPrice(tier.price);
+            openCheckout(`${p.name} - ${tier.duration}`, price);
         }
 
         /* --- CART LOGIC --- */
@@ -1355,10 +1338,11 @@
 
             const idx = selectedDurations[id] || 0;
             const tier = p.pricing[idx] || p.pricing[0];
+            const price = getDisplayPrice(tier.price);
 
             document.getElementById('qvTitle').innerText = p.name;
             document.getElementById('qvDesc').innerText = p.desc;
-            document.getElementById('qvPrice').innerText = `₹${tier.price} (${tier.duration})`;
+            document.getElementById('qvPrice').innerText = `₹${price} (${tier.duration})`;
 
             const list = document.getElementById('qvFeatures');
             list.innerHTML = '';
@@ -1386,6 +1370,78 @@
 
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
+        }
+
+        /* --- AUTOMATIC RESELLER BUY (₹100) MODAL & LOGIC --- */
+        function openBuyResellerModal() {
+            document.getElementById('buyResellerModal').style.display = 'flex';
+        }
+
+        async function handleBuyReseller(e) {
+            e.preventDefault();
+            const username = document.getElementById('buyResUser').value.trim();
+            const password = document.getElementById('buyResPass').value.trim();
+            const name = document.getElementById('buyResName').value.trim();
+            const email = document.getElementById('buyResEmail').value.trim();
+            const phone = document.getElementById('buyResPhone').value.trim();
+            const payerUpiId = document.getElementById('buyResUpi').value.trim();
+            const submitBtn = document.getElementById('buyResSubmitBtn');
+
+            submitBtn.innerText = "Activating Reseller Account...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/reseller/buy-membership`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, name, email, phone, payerUpiId, paymentMethod: 'online' })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    isResellerActive = true;
+                    localStorage.setItem('neo_reseller_active', 'true');
+                    showToast("Congratulations! Reseller Membership Activated (₹100). Reseller discounts applied!");
+                    closeModal('buyResellerModal');
+                    renderProducts();
+                } else {
+                    showToast(data.message || "Failed to activate reseller account.");
+                }
+            } catch (err) {
+                showToast("Server error. Please try again.");
+            } finally {
+                submitBtn.innerText = "Pay ₹100 & Activate Reseller Now";
+                submitBtn.disabled = false;
+            }
+        }
+
+        /* --- REFERRAL SYSTEM (EARN ₹10) --- */
+        function openReferralModal() {
+            document.getElementById('referralModal').style.display = 'flex';
+        }
+
+        async function handleReferralRegister(e) {
+            e.preventDefault();
+            const email = document.getElementById('refUserEmail').value.trim();
+            if (!email) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/referrals/user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    document.getElementById('refCodeDisplay').innerText = data.user.referralCode;
+                    document.getElementById('refBalanceDisplay').innerText = `₹${data.user.walletBalance || 0}`;
+                    document.getElementById('refCountDisplay').innerText = data.user.referralsCount || 0;
+                    document.getElementById('referralInfoResult').style.display = 'block';
+                    showToast("Referral Code generated! Share it to earn ₹10 per panel.");
+                }
+            } catch (err) {
+                showToast("Failed to fetch referral data.");
+            }
         }
 
         /* --- ADMIN DASHBOARD ACCESS & LOGIN --- */
@@ -1423,7 +1479,7 @@
                     showToast(data.message || "Invalid Username or Password!");
                 }
             } catch (err) {
-                showToast("Server se connection nahi ho raha. Ensure localhost:3000 is running.");
+                showToast("Server connection error.");
             } finally {
                 submitBtn.innerText = "Login to Admin Dashboard";
                 submitBtn.disabled = false;
@@ -1436,6 +1492,7 @@
             const email = document.getElementById('custEmail').value.trim();
             const phone = document.getElementById('custWhatsapp').value.trim();
             const payerUpiId = document.getElementById('payerUpiId').value.trim();
+            const referrerCode = document.getElementById('custReferrerCode').value.trim();
             const paymentMethod = document.getElementById('paymentMethod').value;
             const submitBtn = document.getElementById('submitOrderBtn');
 
@@ -1464,6 +1521,7 @@
                         phone,
                         discord,
                         payerUpiId,
+                        referrerCode,
                         paymentMethod,
                         status: 'pending'
                     })
@@ -1485,7 +1543,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                showToast("Server se connection nahi ho raha. Website localhost:3000 se kholo.");
+                showToast("Server connection error.");
             } finally {
                 submitBtn.innerText = "Submit Order Deal";
                 submitBtn.disabled = false;
@@ -1499,7 +1557,7 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        /* --- FIXED SPEECH RECOGNITION WITH DIRECT CHECKOUT --- */
+        /* --- SPEECH RECOGNITION WITH DIRECT CHECKOUT --- */
         let recognition = null;
         let isListening = false;
 

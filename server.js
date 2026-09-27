@@ -12,8 +12,9 @@ const PRODUCTS_PATH = path.join(DATA_DIR, 'products.json');
 const ORDERS_PATH = path.join(DATA_DIR, 'orders.json');
 const RESELLERS_PATH = path.join(DATA_DIR, 'resellers.json');
 const RESELLER_HISTORY_PATH = path.join(DATA_DIR, 'reseller_history.json');
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'neo123';
+const ADMIN_CONFIG_PATH = path.join(DATA_DIR, 'admin.json');
+const REFERRALS_PATH = path.join(DATA_DIR, 'referrals.json');
+
 const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || '';
 const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '';
 const PHONEPE_SALT_INDEX = process.env.PHONEPE_SALT_INDEX || '';
@@ -22,6 +23,16 @@ const PHONEPE_API_BASE = PHONEPE_ENV === 'production'
   ? 'https://api.phonepe.com/apis/hermes'
   : 'https://api-preprod.phonepe.com/apis/pg-sandbox';
 
+function getAdminCredentials() {
+  const envUser = process.env.ADMIN_USERNAME || 'admin';
+  const envPass = process.env.ADMIN_PASSWORD || 'neo123';
+  const stored = readJson(ADMIN_CONFIG_PATH, null);
+  if (stored && stored.username && stored.password) {
+    return { username: stored.username, password: stored.password };
+  }
+  return { username: envUser, password: envPass };
+}
+
 const DEFAULT_PRODUCTS = [
   {
     id: 1,
@@ -29,6 +40,7 @@ const DEFAULT_PRODUCTS = [
     category: 'non root panel',
     image: 'images/abcd_panel.png',
     telegramLink: 'https://t.me/neocheatsfiles',
+    videoLink: 'https://t.me/neocheatsvideos',
     badges: ['NON-ROOT', 'FREEFIRE'],
     desc: 'High performance non-root panel with ESP Champs & Silent Aim location tracking.',
     features: ['ESP Champs', 'AIMSILENT', 'Location ESP', '100% Non-Root Safe'],
@@ -45,6 +57,7 @@ const DEFAULT_PRODUCTS = [
     category: 'root panel',
     image: 'images/invisible_x.png',
     telegramLink: 'https://t.me/neocheatsfiles',
+    videoLink: 'https://t.me/neocheatsvideos',
     badges: ['ROOTED KERNEL', 'KERNEL VERSION'],
     desc: 'Kernel level rooted device panel with precision Aim Lock, Aimbot, and customizable FOV.',
     features: ['AIMLOCK & AIMBOT', 'AIMSILENT', 'Angel FOV 0-180°', 'Chest Rate 1-10', 'ESP LOCATION'],
@@ -61,6 +74,7 @@ const DEFAULT_PRODUCTS = [
     category: 'ios panel',
     image: 'images/miguel_ios.png',
     telegramLink: 'https://t.me/neocheatsfiles',
+    videoLink: 'https://t.me/neocheatsvideos',
     badges: ['IOS / IPAD', 'FREEFIRE'],
     desc: 'Exclusive iOS & iPad Free Fire panel featuring Silent Aim, Speed hack & Auto Fire.',
     features: ['SILENT AIM', 'AIMBOT', 'SPEED', 'AUTOFIRE', 'HEADSHOT', 'ESP ALL LOCATIONS'],
@@ -76,6 +90,7 @@ const DEFAULT_PRODUCTS = [
     category: 'root panel',
     image: 'images/rapid_core.png',
     telegramLink: 'https://t.me/neocheatsfiles',
+    videoLink: 'https://t.me/neocheatsvideos',
     badges: ['BRUTAL', 'STATUS: INJECTED'],
     desc: 'Brutal mode panel loaded with Spin Bot, Enemy Pull, Aim Magnet, and Headshot sliders.',
     features: ['AIMBOT & AIMLOCK', 'AIMSILENT & AIMMAGNET', 'SPIN BOT', 'ENEMY PULL', 'Angle FOV 0-180°', 'Headshot 0-10'],
@@ -92,6 +107,7 @@ const DEFAULT_PRODUCTS = [
     category: 'root panel',
     image: 'images/stricks_br.png',
     telegramLink: 'https://t.me/neocheatsfiles',
+    videoLink: 'https://t.me/neocheatsvideos',
     badges: ['ROOT', 'FREEFIRE BR'],
     desc: 'Battle Royale panel overlay with Aim Magnet, FOV sliders, and Headshot rate tuning.',
     features: ['Aim Silent & Aim Magnet', 'Angle FOV Standard', 'Headshot Rate Tuning', 'Visuals & Exploits'],
@@ -144,7 +160,8 @@ function normalizeProduct(payload) {
     name: String(payload.name || 'New Panel').trim(),
     category: String(payload.category || 'non root panel').trim(),
     image: String(payload.image || 'images/abcd_panel.png').trim(),
-    telegramLink: String(payload.telegramLink || 'https://t.me/neocheatsfiles').trim(),
+    telegramLink: String(payload.telegramLink || payload.fileLink || 'https://t.me/neocheatsfiles').trim(),
+    videoLink: String(payload.videoLink || payload.video || 'https://t.me/neocheatsvideos').trim(),
     badges: Array.isArray(payload.badges) ? payload.badges.map(String) : ['NEW'],
     desc: String(payload.description || payload.desc || 'Panel description').trim(),
     features: Array.isArray(payload.features) ? payload.features.map(String) : ['Instant Delivery'],
@@ -200,6 +217,55 @@ function createOrderRecord({ productName, total, customer, email, phone, discord
   };
 }
 
+function getOrCreateReferralUser(email) {
+  if (!email || !String(email).includes('@')) return null;
+  const cleanEmail = String(email).trim().toLowerCase();
+  const referrals = readJson(REFERRALS_PATH, []);
+  let user = referrals.find(u => u.email.toLowerCase() === cleanEmail);
+
+  if (!user) {
+    const code = 'REF-' + crypto.randomBytes(3).toString('hex').toUpperCase();
+    user = {
+      id: `USER-${Date.now()}`,
+      email: cleanEmail,
+      referralCode: code,
+      walletBalance: 0,
+      totalEarned: 0,
+      referralsCount: 0,
+      createdAt: new Date().toISOString()
+    };
+    referrals.push(user);
+    writeJson(REFERRALS_PATH, referrals);
+  }
+  return user;
+}
+
+function processReferralReward(referrerInput, buyerEmail) {
+  if (!referrerInput) return null;
+  const cleanInput = String(referrerInput).trim().toLowerCase();
+  if (!cleanInput) return null;
+
+  const cleanBuyer = String(buyerEmail || '').trim().toLowerCase();
+  const referrals = readJson(REFERRALS_PATH, []);
+
+  const referrer = referrals.find(u => 
+    u.email.toLowerCase() === cleanInput || 
+    (u.referralCode && u.referralCode.toLowerCase() === cleanInput)
+  );
+
+  if (referrer) {
+    if (referrer.email.toLowerCase() === cleanBuyer) {
+      return null; // Cannot refer yourself
+    }
+    referrer.walletBalance = (referrer.walletBalance || 0) + 10;
+    referrer.totalEarned = (referrer.totalEarned || 0) + 10;
+    referrer.referralsCount = (referrer.referralsCount || 0) + 1;
+    writeJson(REFERRALS_PATH, referrals);
+    return referrer;
+  }
+  return null;
+}
+
 function getAuthCredentials(authHeader) {
   if (!authHeader || !authHeader.startsWith('Basic ')) return null;
   const encoded = authHeader.replace('Basic ', '');
@@ -214,7 +280,8 @@ function getAuthCredentials(authHeader) {
 
 function adminAuth(req, res, next) {
   const credentials = getAuthCredentials(req.headers.authorization);
-  if (!credentials || credentials.username !== ADMIN_USERNAME || credentials.password !== ADMIN_PASSWORD) {
+  const currentAdmin = getAdminCredentials();
+  if (!credentials || credentials.username !== currentAdmin.username || credentials.password !== currentAdmin.password) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
   req.admin = credentials;
@@ -360,6 +427,7 @@ app.get('/api/order-status/:id', (req, res) => {
     status: order.status,
     key: isPaid ? order.key : null,
     telegramLink: product?.telegramLink || 'https://t.me/neocheatsfiles',
+    videoLink: product?.videoLink || 'https://t.me/neocheatsvideos',
     image: product?.image || 'images/abcd_panel.png',
     createdAt: order.createdAt
   });
@@ -381,12 +449,17 @@ app.patch('/api/orders/:id/status', adminAuth, (req, res) => {
 });
 
 app.post('/api/payments/phonepe', keyGenLimiter, async (req, res) => {
-  const { productName, total, customer, email, phone, discord, payerUpiId } = req.body || {};
+  const { productName, total, customer, email, phone, discord, payerUpiId, referrerCode } = req.body || {};
   const finalTotal = Number(total || 0);
 
   if (!productName || !finalTotal || !customer || !email || !phone || !payerUpiId) {
     return res.status(400).json({ success: false, message: 'Missing required payment details' });
   }
+
+  if (referrerCode) {
+    processReferralReward(referrerCode, email);
+  }
+
   if (!PHONEPE_MERCHANT_ID || !PHONEPE_SALT_KEY || !PHONEPE_SALT_INDEX || PHONEPE_SALT_KEY.includes('your_phonepe_salt_key') || PHONEPE_SALT_KEY === '') {
     const orders = readJson(ORDERS_PATH, []);
     const order = createOrderRecord({ productName, total: finalTotal, customer, email, phone, discord, payerUpiId, paymentMethod: 'phonepe_demo', status: 'pending' });
@@ -468,11 +541,15 @@ app.get('/api/payments/phonepe/return', async (req, res) => {
 });
 
 app.post('/api/orders', (req, res) => {
-  const { productName, total, amount, customer, email, phone, discord, payerUpiId, paymentMethod } = req.body;
+  const { productName, total, amount, customer, email, phone, discord, payerUpiId, paymentMethod, referrerCode } = req.body;
   const finalTotal = Number(total ?? amount ?? 0);
 
   if (!productName || !finalTotal || !customer || !email || !phone) {
     return res.status(400).json({ success: false, message: 'Missing required order fields' });
+  }
+
+  if (referrerCode) {
+    processReferralReward(referrerCode, email);
   }
 
   const orders = readJson(ORDERS_PATH, []);
@@ -492,10 +569,32 @@ app.post('/api/orders', (req, res) => {
 
 app.post('/api/admin/login', authLimiter, (req, res) => {
   const { username, password } = req.body || {};
-  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+  const currentAdmin = getAdminCredentials();
+  if (username === currentAdmin.username && password === currentAdmin.password) {
     return res.json({ success: true, username, message: 'Login successful' });
   }
   return res.status(401).json({ success: false, message: 'Invalid username or password' });
+});
+
+app.post('/api/admin/change-password', adminAuth, (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+  const currentAdmin = getAdminCredentials();
+
+  if (!newPassword || String(newPassword).trim().length < 3) {
+    return res.status(400).json({ success: false, message: 'New password must be at least 3 characters long' });
+  }
+  if (currentPassword !== currentAdmin.password) {
+    return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+  }
+
+  const updatedConfig = {
+    username: currentAdmin.username,
+    password: String(newPassword).trim(),
+    updatedAt: new Date().toISOString()
+  };
+
+  writeJson(ADMIN_CONFIG_PATH, updatedConfig);
+  res.json({ success: true, message: 'Admin password changed successfully!' });
 });
 
 app.get('/api/dashboard/stats', adminAuth, (req, res) => {
@@ -592,6 +691,59 @@ app.post('/api/admin/resellers', adminAuth, (req, res) => {
   resellers.unshift(newReseller);
   writeJson(RESELLERS_PATH, resellers);
   res.status(201).json({ success: true, reseller: newReseller });
+});
+
+// BUY RESELLER MEMBERSHIP (₹100 Auto Registration)
+app.post('/api/reseller/buy-membership', keyGenLimiter, (req, res) => {
+  const { username, password, name, email, phone, payerUpiId, paymentMethod } = req.body || {};
+  if (!username || !password || !email) {
+    return res.status(400).json({ success: false, message: 'Username, password and email are required' });
+  }
+
+  const resellers = readJson(RESELLERS_PATH, []);
+  const cleanUser = String(username).trim().toLowerCase();
+  if (resellers.some(r => r.username.toLowerCase() === cleanUser)) {
+    return res.status(400).json({ success: false, message: 'Reseller username already taken. Choose another username.' });
+  }
+
+  const newReseller = {
+    id: `RES-${Date.now()}`,
+    username: String(username).trim(),
+    password: String(password).trim(),
+    name: String(name || username).trim(),
+    email: String(email).trim(),
+    phone: String(phone || '').trim(),
+    balance: 0,
+    allowedCategory: 'all',
+    createdAt: new Date().toISOString(),
+    status: 'active',
+    isAutoBought: true
+  };
+
+  resellers.unshift(newReseller);
+  writeJson(RESELLERS_PATH, resellers);
+
+  const orders = readJson(ORDERS_PATH, []);
+  const orderRecord = createOrderRecord({
+    productName: 'RESELLER MEMBERSHIP LICENSE (₹100)',
+    total: 100,
+    customer: `Reseller: ${newReseller.username}`,
+    email: newReseller.email,
+    phone: newReseller.phone,
+    discord: newReseller.name,
+    payerUpiId: payerUpiId || 'AUTO-BUY-UPI',
+    paymentMethod: paymentMethod || 'online',
+    status: 'paid'
+  });
+  orders.unshift(orderRecord);
+  writeJson(ORDERS_PATH, orders);
+
+  res.status(201).json({
+    success: true,
+    message: 'Reseller Membership activated! You can now log in as a Reseller and get Reseller discounts on panels.',
+    reseller: newReseller,
+    orderId: orderRecord.id
+  });
 });
 
 // ADD/DEDUCT BALANCE (Admin)
@@ -745,11 +897,20 @@ app.get('/api/reseller/history', resellerAuth, (req, res) => {
   res.json(myHistory);
 });
 
+/* --- REFERRAL SYSTEM ENDPOINTS --- */
+app.post('/api/referrals/user', (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ success: false, message: 'Email required' });
+  const user = getOrCreateReferralUser(email);
+  res.json({ success: true, user });
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
+  const currentAdmin = getAdminCredentials();
   console.log(`NEO backend running on port ${PORT}`);
-  console.log(`Admin login: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
+  console.log(`Admin login: ${currentAdmin.username} / ${currentAdmin.password}`);
 });

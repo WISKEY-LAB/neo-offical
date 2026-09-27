@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Dashboard</title>
+  <title>Panel Dashboard | NEO ADMIN</title>
   <style>
     :root { --bg: #f4f4f1; --panel: #ffffff; --soft: #eeeeea; --line: #d8d8d2; --text: #111111; --muted: #696963; --accent: #111111; --accent-2: #2d2d2a; --danger: #a92828; --blue: #555550; }
     * { box-sizing: border-box; }
@@ -36,8 +36,8 @@
     .product-item small { color: var(--muted); }
     .actions { display: flex; gap: 8px; }
     .mini { padding: 8px 10px; font-size: 12px; }
-    .danger { background: rgba(255,107,107,.12); color: #ffc2c2; border: 1px solid rgba(255,107,107,.35); }
-    .success { background: rgba(61,217,179,.12); color: #baf5e8; border: 1px solid rgba(61,217,179,.35); }
+    .danger { background: rgba(255,107,107,.12); color: #a92828; border: 1px solid rgba(255,107,107,.35); }
+    .success { background: rgba(61,217,179,.12); color: #1e7e68; border: 1px solid rgba(61,217,179,.35); }
     .login-box { display: none; max-width: 420px; margin: 60px auto; background: rgba(17,24,39,.8); border: 1px solid var(--line); border-radius: 20px; padding: 28px; box-shadow: 0 10px 25px rgba(15,23,42,.18); }
     .login-box h2 { margin: 0 0 18px; font-size: 26px; }
     .hidden { display: none !important; }
@@ -125,7 +125,19 @@
               </select>
             </div>
           </label>
-          <label>Telegram Download Link (Panel File Link)<input type="text" id="telegramLink" placeholder="https://t.me/neocheatsfiles or https://t.me/channel/123" value="https://t.me/neocheatsfiles" required /></label>
+          <label>Telegram File Link (Panel Download Link)
+            <input type="text" id="telegramLink" placeholder="https://t.me/neocheatsfiles or file URL" value="https://t.me/neocheatsfiles" required />
+          </label>
+          <label>Panel Video Preview Link (YouTube/Telegram/Demo Link)
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="videoLink" placeholder="https://t.me/neocheatsvideos or video URL" value="https://t.me/neocheatsvideos" required />
+              <select onchange="if(this.value){ document.getElementById('videoLink').value = this.value; }" style="width:160px;">
+                <option value="">Presets...</option>
+                <option value="https://t.me/neocheatsvideos">TG Videos Channel</option>
+                <option value="https://t.me/Mandeted999">Direct Support Video</option>
+              </select>
+            </div>
+          </label>
           <label>Description<textarea id="description" placeholder="Short description..." required></textarea></label>
           <div class="quick-row"><label>Duration 1<input type="text" id="plan1Name" value="1 Day" /></label><label>Price 1<input type="number" id="plan1Price" value="150" min="0" /></label></div>
           <div class="quick-row"><label>Duration 2<input type="text" id="plan2Name" value="7 Days" /></label><label>Price 2<input type="number" id="plan2Price" value="500" min="0" /></label></div>
@@ -141,7 +153,7 @@
       </section>
     </div>
 
-    <!-- RESELLER MANAGEMENT & WALLET CONTROL SECTION -->
+    <!-- RESELLER MANAGEMENT & ADMIN SECURITY SECTION -->
     <div class="two-col" style="margin-top: 22px;">
       <section class="panel">
         <h3>Create Reseller Account</h3>
@@ -165,7 +177,22 @@
         </form>
       </section>
 
+      <!-- ADMIN PASSWORD CHANGE CARD -->
       <section class="panel">
+        <h3>🔐 Change Admin Dashboard Password</h3>
+        <form id="changeAdminPasswordForm">
+          <label>Current Admin Password<input type="password" id="currentAdminPass" placeholder="••••••••" required /></label>
+          <label>New Admin Password<input type="password" id="newAdminPass" placeholder="Enter new password" required /></label>
+          <label>Confirm New Password<input type="password" id="confirmAdminPass" placeholder="Confirm new password" required /></label>
+          <div class="actions" style="margin-top: 10px;">
+            <button type="submit" class="button primary" style="background:#000;">Change Admin Password</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div class="two-col" style="margin-top: 22px;">
+      <section class="panel" style="grid-column: span 2;">
         <h3>Active Resellers & Wallet Balances</h3>
         <div class="product-list" id="resellerList">Loading resellers...</div>
       </section>
@@ -299,7 +326,7 @@
     }
 
     async function addResellerBalance(resellerId) {
-      const input = prompt("Enter amount to ADD to wallet (e.g. 500 or 1000):", "500");
+      const input = prompt("Enter amount to ADD to reseller wallet (e.g. 500 or 1000):", "500");
       if (!input) return;
       const amount = Number(input);
       if (isNaN(amount) || amount === 0) return;
@@ -345,6 +372,37 @@
       }
     });
 
+    document.getElementById('changeAdminPasswordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPassword = document.getElementById('currentAdminPass').value.trim();
+      const newPassword = document.getElementById('newAdminPass').value.trim();
+      const confirmPassword = document.getElementById('confirmAdminPass').value.trim();
+
+      if (newPassword !== confirmPassword) {
+        alert("New password and confirm password do not match!");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/change-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getHeaders() },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          alert("Admin Password changed successfully! Please use new password for future logins.");
+          setAuth({ username: auth.username, password: newPassword });
+          document.getElementById('changeAdminPasswordForm').reset();
+        } else {
+          alert(data.message || "Failed to change password.");
+        }
+      } catch (err) {
+        alert("Server error while changing admin password.");
+      }
+    });
+
     function renderAnalytics(stats) {
       const pills = document.getElementById('statusPills');
       pills.innerHTML = Object.entries(stats.statusCounts || {}).map(([status, count]) => `<span class="pill">${status}: <strong>${count}</strong></span>`).join('') || '<span class="pill">No orders</span>';
@@ -382,7 +440,8 @@
             <div>
               <strong>${panel.name} ${stockBadge}</strong>
               <small>Category: <span style="font-weight:700; color:#111; text-transform:uppercase;">${panel.category}</span></small>
-              <small style="display:block; margin-top:2px;">TG File: <a href="${panel.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="color:#0088cc; font-weight:700;">${panel.telegramLink || 'https://t.me/neocheatsfiles'}</a></small>
+              <small style="display:block; margin-top:2px;">📁 TG File: <a href="${panel.telegramLink || 'https://t.me/neocheatsfiles'}" target="_blank" style="color:#0088cc; font-weight:700;">${panel.telegramLink || 'https://t.me/neocheatsfiles'}</a></small>
+              <small style="display:block; margin-top:2px;">🎬 TG Video: <a href="${panel.videoLink || 'https://t.me/neocheatsvideos'}" target="_blank" style="color:#ef4444; font-weight:700;">${panel.videoLink || 'https://t.me/neocheatsvideos'}</a></small>
               <div style="color:#666; font-size:12px; margin-top:4px;">${pricingText}</div>
             </div>
           </div>
@@ -438,6 +497,7 @@
       document.getElementById('category').value = panel.category;
       document.getElementById('image').value = panel.image || 'images/abcd_panel.png';
       document.getElementById('telegramLink').value = panel.telegramLink || 'https://t.me/neocheatsfiles';
+      document.getElementById('videoLink').value = panel.videoLink || 'https://t.me/neocheatsvideos';
       document.getElementById('description').value = panel.description || panel.desc || '';
       document.getElementById('plan1Name').value = panel.pricing[0]?.duration || '1 Day';
       document.getElementById('plan1Price').value = panel.pricing[0]?.price || 0;
@@ -463,6 +523,7 @@
       const category = document.getElementById('category').value.trim();
       const image = document.getElementById('image').value.trim() || 'images/abcd_panel.png';
       const telegramLink = document.getElementById('telegramLink').value.trim() || 'https://t.me/neocheatsfiles';
+      const videoLink = document.getElementById('videoLink').value.trim() || 'https://t.me/neocheatsvideos';
       const description = document.getElementById('description').value.trim();
       const rawKeys = document.getElementById('keysPool').value;
       const keysPool = rawKeys.split(/\r?\n/).map(k => k.trim()).filter(Boolean);
@@ -473,7 +534,7 @@
       ];
 
       if (!name || !description) return;
-      const payload = { name, category, image, telegramLink, description, pricing, keysPool, badges: ['NEW'], features: ['Instant Delivery'] };
+      const payload = { name, category, image, telegramLink, videoLink, description, pricing, keysPool, badges: ['NEW'], features: ['Instant Delivery'] };
       const url = panelId ? `${API_BASE}/api/products/${panelId}` : `${API_BASE}/api/products`;
       const method = panelId ? 'PUT' : 'POST';
 
@@ -488,6 +549,7 @@
         document.getElementById('panelId').value = '';
         document.getElementById('image').value = 'images/abcd_panel.png';
         document.getElementById('telegramLink').value = 'https://t.me/neocheatsfiles';
+        document.getElementById('videoLink').value = 'https://t.me/neocheatsvideos';
         document.getElementById('plan1Name').value = '1 Day';
         document.getElementById('plan1Price').value = 150;
         document.getElementById('plan2Name').value = '7 Days';
@@ -504,6 +566,7 @@
       document.getElementById('panelId').value = '';
       document.getElementById('image').value = 'images/abcd_panel.png';
       document.getElementById('telegramLink').value = 'https://t.me/neocheatsfiles';
+      document.getElementById('videoLink').value = 'https://t.me/neocheatsvideos';
       document.getElementById('plan1Name').value = '1 Day';
       document.getElementById('plan1Price').value = 150;
       document.getElementById('plan2Name').value = '7 Days';
