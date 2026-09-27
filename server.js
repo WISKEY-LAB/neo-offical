@@ -749,7 +749,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(ROOT_DIR, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`NEO backend running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`NEO backend running on port ${PORT}`);
   console.log(`Admin login: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
 });
