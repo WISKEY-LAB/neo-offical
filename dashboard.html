@@ -177,6 +177,33 @@
       </section>
     </div>
 
+    <!-- CATEGORIES & SETUP VIDEO MANAGER SECTION -->
+    <div class="two-col" style="margin-top: 22px;">
+      <section class="panel">
+        <h3>🏷️ Categories Manager (Create & Delete)</h3>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Create or delete product categories. New categories will appear automatically across storefront & admin forms.</p>
+        <form id="categoryCreateForm" style="display:flex; gap:10px; margin-bottom:14px;">
+          <input type="text" id="newCategoryInput" placeholder="New category name (e.g. brutal panel)" required style="flex:1;" />
+          <button type="submit" class="button primary" style="white-space:nowrap;">+ Create Category</button>
+        </form>
+        <label>Active Store Categories:</label>
+        <div id="categoriesList" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">Loading categories...</div>
+      </section>
+
+      <section class="panel">
+        <h3>🎥 Global "How To Setup" Video Manager</h3>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Set or update the global store tutorial video link shown on storefront modals & channels.</p>
+        <form id="globalSettingsForm">
+          <label>Global Setup Video Link (URL)
+            <input type="text" id="globalSetupVideoInput" placeholder="https://t.me/neocheatsvideos or YouTube link" required />
+          </label>
+          <div class="actions" style="margin-top: 10px;">
+            <button type="submit" class="button primary" style="background:#000;">Save Global Setup Video URL</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
     <!-- RESELLER MANAGEMENT & ADMIN SECURITY SECTION -->
     <div class="two-col" style="margin-top: 22px;">
       <section class="panel">
@@ -188,12 +215,8 @@
           <div class="quick-row">
             <label>Initial Wallet Balance (₹)<input type="number" id="newResBalance" value="1000" min="0" required /></label>
             <label>Category Access Permission
-              <select id="newResCategory">
+              <select id="newResCategory" class="cat-select-dynamic">
                 <option value="all">ALL PANELS (Full Access)</option>
-                <option value="crackpanel">CRACKPANEL Only</option>
-                <option value="root panel">Root Panel Only</option>
-                <option value="non root panel">Non-Root Panel Only</option>
-                <option value="ios panel">iOS Panel Only</option>
               </select>
             </label>
           </div>
@@ -217,9 +240,39 @@
 
     <div class="two-col" style="margin-top: 22px;">
       <section class="panel" style="grid-column: span 2;">
-        <h3>Active Resellers & Wallet Balances</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+          <h3 style="margin:0;">Active Resellers & Wallet Balances</h3>
+          <div style="width:100%; max-width:380px;">
+            <input type="text" id="resellerSearchInput" placeholder="🔍 Search reseller by Username, Email, or Name..." oninput="filterResellers()" style="padding:10px 14px; border-radius:8px;" />
+          </div>
+        </div>
         <div class="product-list" id="resellerList">Loading resellers...</div>
       </section>
+    </div>
+
+    <!-- EDIT RESELLER MODAL -->
+    <div id="editResellerModal" class="login-box" style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); max-width:100%; width:100%; height:100%; display:none; align-items:center; justify-content:center; padding:20px;">
+      <div style="background:#fff; padding:28px; border-radius:12px; max-width:480px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.3); color:#111;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 style="margin:0; font-size:20px;">✏️ Edit Reseller Account</h3>
+          <button type="button" onclick="closeEditResellerModal()" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+        </div>
+        <form id="editResellerForm">
+          <input type="hidden" id="editResId" />
+          <label>Reseller Username<input type="text" id="editResUsername" required /></label>
+          <label>Password<input type="text" id="editResPassword" required /></label>
+          <label>Reseller Name / Email<input type="text" id="editResName" required /></label>
+          <label>Set Wallet Balance (₹)<input type="number" id="editResBalance" min="0" required /></label>
+          <label>Category Access Permission
+            <select id="editResCategory" class="cat-select-dynamic">
+              <option value="all">ALL PANELS (Full Access)</option>
+            </select>
+          </label>
+          <div class="actions" style="margin-top:14px;">
+            <button type="submit" class="button primary" style="width:100%;">Save Reseller Changes</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <section class="panel orders-panel">
@@ -308,21 +361,169 @@
       const orders = await ordersRes.json();
       renderOrders(orders);
 
+      await loadCategories();
+      await loadSettings();
       await loadResellers();
     }
+
+    /* --- CATEGORIES & SETTINGS MANAGEMENT --- */
+    let activeCategories = [];
+    async function loadCategories() {
+      try {
+        const res = await fetch(`${API_BASE}/api/categories`);
+        if (res.ok) {
+          activeCategories = await res.json();
+          renderCategories(activeCategories);
+          populateCategoryDropdowns(activeCategories);
+        }
+      } catch (err) {
+        console.error("Error loading categories", err);
+      }
+    }
+
+    function renderCategories(categories) {
+      const container = document.getElementById('categoriesList');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!categories || categories.length === 0) {
+        container.innerHTML = `<span style="font-size:12px; color:var(--muted);">No categories found.</span>`;
+        return;
+      }
+      categories.forEach(cat => {
+        const badge = document.createElement('div');
+        badge.style.cssText = "background:#fafaf8; border:1px solid var(--line); border-radius:6px; padding:6px 12px; display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:13px; text-transform:uppercase;";
+        badge.innerHTML = `
+          <span>${cat}</span>
+          <button type="button" onclick="deleteCategory('${cat}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:900; padding:0 2px;">&times;</button>
+        `;
+        container.appendChild(badge);
+      });
+    }
+
+    function populateCategoryDropdowns(categories) {
+      // Panel Form Category dropdown
+      const panelCatSelect = document.getElementById('category');
+      if (panelCatSelect) {
+        const currentVal = panelCatSelect.value;
+        panelCatSelect.innerHTML = categories.map(c => `<option value="${c}">${c.toUpperCase()}</option>`).join('');
+        if (categories.includes(currentVal)) panelCatSelect.value = currentVal;
+      }
+
+      // Reseller Category permissions dropdowns
+      const resellerCatSelects = document.querySelectorAll('.cat-select-dynamic');
+      resellerCatSelects.forEach(select => {
+        const currentVal = select.value;
+        let optionsHTML = `<option value="all">ALL PANELS (Full Access)</option>`;
+        optionsHTML += categories.map(c => `<option value="${c}">${c.toUpperCase()} Only</option>`).join('');
+        select.innerHTML = optionsHTML;
+        if (currentVal) select.value = currentVal;
+      });
+    }
+
+    async function deleteCategory(catName) {
+      if (!confirm(`Are you sure you want to delete category '${catName.toUpperCase()}'?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/categories/${encodeURIComponent(catName)}`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        });
+        if (res.ok) {
+          loadCategories();
+        }
+      } catch (err) {
+        alert("Failed to delete category.");
+      }
+    }
+
+    document.getElementById('categoryCreateForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('newCategoryInput');
+      const category = input.value.trim();
+      if (!category) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/categories`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getHeaders() },
+          body: JSON.stringify({ category })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          input.value = '';
+          loadCategories();
+        } else {
+          alert(data.message || "Failed to create category");
+        }
+      } catch (err) {
+        alert("Error creating category");
+      }
+    });
+
+    async function loadSettings() {
+      try {
+        const res = await fetch(`${API_BASE}/api/settings`);
+        if (res.ok) {
+          const settings = await res.json();
+          const videoInput = document.getElementById('globalSetupVideoInput');
+          if (videoInput && settings.globalSetupVideo) {
+            videoInput.value = settings.globalSetupVideo;
+          }
+        }
+      } catch (err) {
+        console.error("Error loading settings", err);
+      }
+    }
+
+    document.getElementById('globalSettingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const globalSetupVideo = document.getElementById('globalSetupVideoInput').value.trim();
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getHeaders() },
+          body: JSON.stringify({ globalSetupVideo })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert("Global How To Setup Video URL updated successfully!");
+        } else {
+          alert(data.message || "Failed to update video URL");
+        }
+      } catch (err) {
+        alert("Server error while updating settings");
+      }
+    });
+
+    /* --- RESELLER SEARCH & EDIT MANAGEMENT --- */
+    let allResellersData = [];
 
     async function loadResellers() {
       const res = await fetch(`${API_BASE}/api/admin/resellers`, { headers: getHeaders() });
       if (!res.ok) return;
-      const resellers = await res.json();
-      renderResellers(resellers);
+      allResellersData = await res.json();
+      filterResellers();
+    }
+
+    function filterResellers() {
+      const query = (document.getElementById('resellerSearchInput')?.value || '').toLowerCase().trim();
+      if (!query) {
+        renderResellers(allResellersData);
+        return;
+      }
+      const filtered = allResellersData.filter(r => 
+        (r.username && r.username.toLowerCase().includes(query)) ||
+        (r.name && r.name.toLowerCase().includes(query)) ||
+        (r.email && r.email.toLowerCase().includes(query))
+      );
+      renderResellers(filtered);
     }
 
     function renderResellers(resellers) {
       const list = document.getElementById('resellerList');
       list.innerHTML = '';
       if (!resellers.length) {
-        list.innerHTML = '<div class="product-item"><div><strong>No resellers yet</strong><small>Create your first reseller partner.</small></div></div>';
+        list.innerHTML = '<div class="product-item"><div><strong>No resellers matching search</strong><small>Try a different search term or create a reseller.</small></div></div>';
         return;
       }
 
@@ -332,15 +533,16 @@
         row.className = 'product-item';
         row.innerHTML = `
           <div>
-            <strong>${reseller.name} (<span style="color:#0088cc; font-family:monospace;">${reseller.username}</span>)</strong>
+            <strong>${reseller.name || reseller.username} (<span style="color:#0088cc; font-family:monospace;">${reseller.username}</span>)</strong>
             <small>Category Access: <span style="font-weight:700; color:#111;">${catBadge === 'ALL' ? 'ALL PANELS' : catBadge + ' ONLY'}</span></small>
-            <small>Password: ${reseller.password}</small>
+            <small>Password: <span style="font-family:monospace;">${reseller.password}</span></small>
           </div>
           <div>
             <strong style="color:#28c76f; font-size:16px;">₹${reseller.balance}</strong>
             <small style="color:#666;">Wallet Balance</small>
           </div>
           <div class="actions">
+            <button class="button secondary mini" onclick="openEditResellerModal('${reseller.id}')">✏️ Edit</button>
             <button class="button secondary mini" onclick="addResellerBalance('${reseller.id}')">+ Balance</button>
             <button class="button danger mini" onclick="deleteReseller('${reseller.id}')">Delete</button>
           </div>
@@ -348,6 +550,52 @@
         list.appendChild(row);
       });
     }
+
+    function openEditResellerModal(resellerId) {
+      const reseller = allResellersData.find(r => r.id === resellerId);
+      if (!reseller) return;
+      document.getElementById('editResId').value = reseller.id;
+      document.getElementById('editResUsername').value = reseller.username || '';
+      document.getElementById('editResPassword').value = reseller.password || '';
+      document.getElementById('editResName').value = reseller.name || reseller.username || '';
+      document.getElementById('editResBalance').value = reseller.balance ?? 0;
+      document.getElementById('editResCategory').value = reseller.allowedCategory || 'all';
+
+      const modal = document.getElementById('editResellerModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeEditResellerModal() {
+      const modal = document.getElementById('editResellerModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    document.getElementById('editResellerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editResId').value;
+      const username = document.getElementById('editResUsername').value.trim();
+      const password = document.getElementById('editResPassword').value.trim();
+      const name = document.getElementById('editResName').value.trim();
+      const balance = Number(document.getElementById('editResBalance').value || 0);
+      const allowedCategory = document.getElementById('editResCategory').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/resellers/${encodeURIComponent(id)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', ...getHeaders() },
+          body: JSON.stringify({ username, password, name, balance, allowedCategory })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          closeEditResellerModal();
+          loadResellers();
+        } else {
+          alert(data.message || "Failed to update reseller");
+        }
+      } catch (err) {
+        alert("Error updating reseller details");
+      }
+    });
 
     async function addResellerBalance(resellerId) {
       const input = prompt("Enter amount to ADD to reseller wallet (e.g. 500 or 1000):", "500");

@@ -690,11 +690,23 @@
                 Reseller Portal
             </a>
 
-            <!-- GMAIL LOGIN / MY ORDERS BUTTON -->
-            <button class="action-icon-btn" onclick="openUserOrdersModal()" title="Gmail Login / My Orders" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #0284c7;">
-                <i class="fa-solid fa-key"></i>
-                Gmail Login / My Keys
-            </button>
+            <!-- GMAIL LOGIN / MY ORDERS & WALLET BUTTON -->
+            <div id="headerGmailGuestWrap">
+                <button class="action-icon-btn" onclick="openUserOrdersModal()" title="Gmail Login / My Orders & Wallet" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #0284c7;">
+                    <i class="fa-solid fa-wallet"></i>
+                    Gmail Login / Wallet
+                </button>
+            </div>
+            <div id="headerGmailUserWrap" style="display: none; align-items: center; gap: 6px;">
+                <button class="action-icon-btn" onclick="openUserOrdersModal()" title="Manage Account & Wallet" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 800; font-size: 12px; gap: 6px; display: inline-flex; align-items: center; background: #0284c7; color: #fff;">
+                    <i class="fa-solid fa-user-circle"></i>
+                    <span id="headerGmailEmail">user@gmail.com</span>
+                    <span style="background: #0369a1; padding: 2px 8px; border-radius: 12px; color: #fef08a; font-weight: 900;">💳 ₹<span id="headerWalletBalance">0</span></span>
+                </button>
+                <button onclick="logoutGmailUser()" title="Logout Gmail" style="background: #ef4444; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 13px;">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
 
             <!-- ADMIN LOGIN BUTTON -->
             <button class="action-icon-btn" onclick="openAdminPanelAccess()" title="Admin Panel" style="width: auto; padding: 0 12px; border-radius: 20px; font-weight: 700; font-size: 12px; gap: 6px; display: inline-flex; align-items: center;">
@@ -847,27 +859,60 @@
         </div>
     </div>
 
-    <!-- GMAIL CUSTOMER LOGIN & PURCHASES MODAL -->
+    <!-- GMAIL CUSTOMER LOGIN, WALLET & PURCHASES MODAL -->
     <div class="modal-bg" id="userOrdersModal">
         <div class="modal-card" style="max-width: 540px;">
             <span class="close-btn" onclick="closeModal('userOrdersModal')">&times;</span>
-            <div style="text-align: center; margin-bottom: 18px;">
+            <div style="text-align: center; margin-bottom: 16px;">
                 <div style="width: 50px; height: 50px; background: #0284c7; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 22px;">
-                    <i class="fa-solid fa-key"></i>
+                    <i class="fa-solid fa-wallet"></i>
                 </div>
-                <h3 style="font-size: 20px; font-weight: 800;">Gmail Login & Purchased Keys</h3>
-                <p style="font-size: 12px; color: var(--text-muted);">Apni Gmail Email address daliye aur apne saare kharide huye panel keys aur download links yahi dekhiye!</p>
+                <h3 style="font-size: 20px; font-weight: 800;">Gmail Login & Wallet Account</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Apni Gmail ID se Login karke apna Wallet Balance, Purchased Keys aur Download Links dekhiye!</p>
             </div>
+
+            <!-- GMAIL LOGIN FORM -->
             <form onsubmit="handleUserOrdersLookup(event)">
                 <div class="form-group">
                     <label>YOUR GMAIL ADDRESS</label>
                     <input type="email" id="userLookupEmail" placeholder="yourgmail@gmail.com" required>
                 </div>
-                <button type="submit" class="btn" id="userLookupBtn" style="width: 100%; background: #0284c7; font-weight: 800;">View My Purchased Keys</button>
+                <button type="submit" class="btn" id="userLookupBtn" style="width: 100%; background: #0284c7; font-weight: 800;">Login & View Wallet Balance</button>
             </form>
+
+            <!-- LOGGED IN USER WALLET CARD -->
+            <div id="userWalletCard" style="display: none; margin-top: 16px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 11px; color: #0369a1; font-weight: 700; text-transform: uppercase;">Current Wallet Balance</div>
+                        <div style="font-size: 26px; font-weight: 900; color: #0284c7;" id="modalWalletBal">₹0</div>
+                    </div>
+                    <button class="btn" onclick="toggleRechargeForm(true)" style="background: #28c76f; padding: 8px 14px; font-size: 12px;">+ Add Money / Recharge</button>
+                </div>
+
+                <!-- RECHARGE FORM -->
+                <div id="rechargeWalletSection" style="display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid #bae6fd;">
+                    <h4 style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: #0f172a;">Recharge Wallet Balance:</h4>
+                    <form onsubmit="handleRechargeUserWallet(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                            <input type="number" id="userRechargeAmount" placeholder="Amount (₹)" min="10" required style="padding: 8px;">
+                            <input type="text" id="userRechargeUpi" placeholder="Your UPI ID" required style="padding: 8px;">
+                        </div>
+                        <button type="submit" class="btn" id="rechargeSubmitBtn" style="width: 100%; background: #28c76f; font-weight: 800; padding: 8px;">Add Money to Wallet Now</button>
+                    </form>
+                </div>
+
+                <!-- REFERRAL SUMMARY -->
+                <div style="margin-top: 10px; font-size: 11px; color: #475569; border-top: 1px solid #bae6fd; padding-top: 8px; display: flex; justify-content: space-between;">
+                    <span>Referral Code: <strong style="color: #7367f0; font-family: monospace;" id="modalRefCode">REF-123</strong></span>
+                    <span>Earned: <strong style="color: #28c76f;" id="modalRefEarned">₹0</strong></span>
+                </div>
+            </div>
+
+            <!-- ORDERS & KEYS RESULT -->
             <div id="userOrdersResult" style="display: none; margin-top: 18px;">
                 <h4 style="font-size: 14px; font-weight: 800; margin-bottom: 10px;">Your Orders & Keys:</h4>
-                <div id="userOrdersList" style="display: grid; gap: 10px; max-height: 280px; overflow-y: auto;"></div>
+                <div id="userOrdersList" style="display: grid; gap: 10px; max-height: 240px; overflow-y: auto;"></div>
             </div>
         </div>
     </div>
@@ -929,14 +974,15 @@
 
             <div class="form-group">
                 <label>PAYMENT METHOD</label>
-                <select id="paymentMethod" class="duration-select">
+                <select id="paymentMethod" class="duration-select" onchange="togglePaymentFields(this.value)">
                     <option value="online">PhonePe Payment / Direct UPI</option>
+                    <option value="gmail_wallet">💳 Gmail Wallet Balance (Available: ₹<span id="checkoutWalletBalText">0</span>)</option>
                     <option value="crypto">Crypto Payment</option>
                     <option value="manual">Contact Admin</option>
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="upiIdFormGroup">
                 <label for="payerUpiId">YOUR UPI ID (FOR PAYMENT REQUEST)</label>
                 <input type="text" id="payerUpiId" placeholder="e.g. yourname@oksbi" autocomplete="off">
             </div>
@@ -1269,21 +1315,149 @@
             }
         }
 
-        /* --- GMAIL USER PURCHASES & KEYS LOOKUP --- */
+        /* --- GMAIL USER ACCOUNT & WALLET LOGIC --- */
+        let loggedUserEmail = localStorage.getItem('neo_logged_gmail') || '';
+        let loggedUserWallet = 0;
+
+        async function checkLoggedGmailUser() {
+            if (!loggedUserEmail) {
+                const guestWrap = document.getElementById('headerGmailGuestWrap');
+                const userWrap = document.getElementById('headerGmailUserWrap');
+                if (guestWrap) guestWrap.style.display = 'block';
+                if (userWrap) userWrap.style.display = 'none';
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/api/user/profile?email=${encodeURIComponent(loggedUserEmail)}`);
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    loggedUserWallet = data.user.walletBalance || 0;
+                    const headerEmail = document.getElementById('headerGmailEmail');
+                    const headerBal = document.getElementById('headerWalletBalance');
+                    const checkBalText = document.getElementById('checkoutWalletBalText');
+                    const modalBal = document.getElementById('modalWalletBal');
+                    const modalRefCode = document.getElementById('modalRefCode');
+                    const modalRefEarned = document.getElementById('modalRefEarned');
+
+                    if (headerEmail) headerEmail.innerText = loggedUserEmail;
+                    if (headerBal) headerBal.innerText = loggedUserWallet;
+                    if (checkBalText) checkBalText.innerText = loggedUserWallet;
+                    if (modalBal) modalBal.innerText = `₹${loggedUserWallet}`;
+                    if (modalRefCode) modalRefCode.innerText = data.user.referralCode || 'REF-123';
+                    if (modalRefEarned) modalRefEarned.innerText = `₹${data.user.totalEarned || 0}`;
+
+                    const walletCard = document.getElementById('userWalletCard');
+                    if (walletCard) walletCard.style.display = 'block';
+
+                    const guestWrap = document.getElementById('headerGmailGuestWrap');
+                    const userWrap = document.getElementById('headerGmailUserWrap');
+                    if (guestWrap) guestWrap.style.display = 'none';
+                    if (userWrap) userWrap.style.display = 'flex';
+
+                    const lookupInput = document.getElementById('userLookupEmail');
+                    if (lookupInput) lookupInput.value = loggedUserEmail;
+                }
+            } catch (err) {
+                console.error("Error loading user profile", err);
+            }
+        }
+        checkLoggedGmailUser();
+
+        function logoutGmailUser() {
+            localStorage.removeItem('neo_logged_gmail');
+            loggedUserEmail = '';
+            loggedUserWallet = 0;
+            const guestWrap = document.getElementById('headerGmailGuestWrap');
+            const userWrap = document.getElementById('headerGmailUserWrap');
+            if (guestWrap) guestWrap.style.display = 'block';
+            if (userWrap) userWrap.style.display = 'none';
+
+            const walletCard = document.getElementById('userWalletCard');
+            if (walletCard) walletCard.style.display = 'none';
+
+            const ordersResult = document.getElementById('userOrdersResult');
+            if (ordersResult) ordersResult.style.display = 'none';
+
+            const lookupInput = document.getElementById('userLookupEmail');
+            if (lookupInput) lookupInput.value = '';
+
+            showToast("Logged out from Gmail account.");
+        }
+
         function openUserOrdersModal() {
+            if (loggedUserEmail) {
+                const lookupInput = document.getElementById('userLookupEmail');
+                if (lookupInput) lookupInput.value = loggedUserEmail;
+                checkLoggedGmailUser();
+                fetchUserOrdersList(loggedUserEmail);
+            }
             document.getElementById('userOrdersModal').style.display = 'flex';
+        }
+
+        function toggleRechargeForm(show) {
+            const section = document.getElementById('rechargeWalletSection');
+            if (!section) return;
+            section.style.display = (show && section.style.display === 'none') ? 'block' : 'none';
+        }
+
+        async function handleRechargeUserWallet(e) {
+            e.preventDefault();
+            const amount = Number(document.getElementById('userRechargeAmount').value);
+            const payerUpiId = document.getElementById('userRechargeUpi').value.trim();
+            const email = loggedUserEmail || document.getElementById('userLookupEmail').value.trim();
+            const btn = document.getElementById('rechargeSubmitBtn');
+
+            if (!email || !amount || amount <= 0) return;
+            btn.innerText = "Processing Recharge...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/user/recharge-wallet`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, amount, payerUpiId })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(`₹${amount} added to your Gmail Wallet Balance!`);
+                    document.getElementById('userRechargeAmount').value = '';
+                    toggleRechargeForm(false);
+                    loggedUserEmail = email;
+                    localStorage.setItem('neo_logged_gmail', email);
+                    checkLoggedGmailUser();
+                } else {
+                    showToast(data.message || "Failed to recharge wallet");
+                }
+            } catch (err) {
+                showToast("Recharge error. Please try again.");
+            } finally {
+                btn.innerText = "Add Money to Wallet Now";
+                btn.disabled = false;
+            }
         }
 
         async function handleUserOrdersLookup(e) {
             e.preventDefault();
             const email = document.getElementById('userLookupEmail').value.trim();
+            if (!email) return;
+
+            loggedUserEmail = email;
+            localStorage.setItem('neo_logged_gmail', email);
+
             const btn = document.getElementById('userLookupBtn');
+            btn.innerText = "Logging in & Checking Balance...";
+            btn.disabled = true;
+
+            await checkLoggedGmailUser();
+            await fetchUserOrdersList(email);
+
+            btn.innerText = "Login & View Wallet Balance";
+            btn.disabled = false;
+        }
+
+        async function fetchUserOrdersList(email) {
             const resultBox = document.getElementById('userOrdersResult');
             const list = document.getElementById('userOrdersList');
-
-            if (!email) return;
-            btn.innerText = "Checking Orders...";
-            btn.disabled = true;
 
             try {
                 const res = await fetch(`${API_BASE}/api/user/orders?email=${encodeURIComponent(email)}`);
@@ -1326,9 +1500,6 @@
                 }
             } catch (err) {
                 showToast("Server connection error.");
-            } finally {
-                btn.innerText = "View My Purchased Keys";
-                btn.disabled = false;
             }
         }
 
@@ -1372,6 +1543,7 @@
         function updateCartUI() {
             document.getElementById('cartBadge').innerText = cart.length;
             const container = document.getElementById('cartItemsContainer');
+            if (!container) return;
             container.innerHTML = '';
             let total = 0;
 
@@ -1392,7 +1564,8 @@
                 });
             }
 
-            document.getElementById('cartTotalPrice').innerText = `₹${total}`;
+            const cartTotalEl = document.getElementById('cartTotalPrice');
+            if (cartTotalEl) cartTotalEl.innerText = `₹${total}`;
         }
 
         function proceedCartCheckout() {
@@ -1424,14 +1597,15 @@
 
         function closeAllDrawers() {
             const drawer = document.getElementById('drawerOverlay');
-            drawer.classList.remove('active', 'active-cart');
+            if (drawer) drawer.classList.remove('active', 'active-cart');
         }
 
         function selectCategory(cat, title, btn) {
             selectedCategory = cat;
-            document.getElementById('categoryTitle').innerText = title;
+            const titleEl = document.getElementById('categoryTitle');
+            if (titleEl) titleEl.innerText = title;
             document.querySelectorAll('.filter-item').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
             closeAllDrawers();
             renderProducts();
         }
@@ -1468,9 +1642,65 @@
             document.getElementById('quickViewModal').style.display = 'flex';
         }
 
+        /* --- STOREFRONT CATEGORIES & SETTINGS LOADERS --- */
+        async function loadCategoriesStorefront() {
+            try {
+                const res = await fetch(`${API_BASE}/api/categories`);
+                if (res.ok) {
+                    const cats = await res.json();
+                    const list = document.querySelector('.filter-list');
+                    if (list && Array.isArray(cats) && cats.length > 0) {
+                        list.innerHTML = `<button class="filter-item active" onclick="selectCategory('all', 'All Products', this)">All Panels</button>`;
+                        cats.forEach(c => {
+                            const cap = c.charAt(0).toUpperCase() + c.slice(1);
+                            list.innerHTML += `<button class="filter-item" onclick="selectCategory('${c}', '${cap}', this)">${cap}</button>`;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading storefront categories", err);
+            }
+        }
+        loadCategoriesStorefront();
+
+        async function loadSettingsStorefront() {
+            try {
+                const res = await fetch(`${API_BASE}/api/settings`);
+                if (res.ok) {
+                    const settings = await res.json();
+                    if (settings.globalSetupVideo) {
+                        const tutorialLinks = document.querySelectorAll('a[href="https://t.me/neocheatsvideos"]');
+                        tutorialLinks.forEach(link => {
+                            link.href = settings.globalSetupVideo;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading storefront settings", err);
+            }
+        }
+        loadSettingsStorefront();
+
+        function togglePaymentFields(method) {
+            const upiGroup = document.getElementById('upiIdFormGroup');
+            const btn = document.getElementById('submitOrderBtn');
+            if (method === 'gmail_wallet') {
+                if (upiGroup) upiGroup.style.display = 'none';
+                if (btn) btn.innerText = `Pay ₹${currentCheckoutDetails.amount} with Gmail Wallet`;
+            } else {
+                if (upiGroup) upiGroup.style.display = 'block';
+                if (btn) btn.innerText = "Pay Now & Get Key";
+            }
+        }
+
         function openCheckout(title, amount) {
             currentCheckoutDetails = { title, amount };
             document.getElementById('checkoutProductTitle').innerText = `Item: ${title} | Total: ₹${amount}`;
+            if (loggedUserEmail) {
+                document.getElementById('custEmail').value = loggedUserEmail;
+                checkLoggedGmailUser();
+            }
+            togglePaymentFields(document.getElementById('paymentMethod').value);
             document.getElementById('checkoutModal').style.display = 'flex';
         }
 
@@ -1604,6 +1834,50 @@
 
             if (!email || !phone) {
                 showToast("Please fill your Gmail Email address and WhatsApp number!");
+                return;
+            }
+
+            // HANDLE WALLET PAYMENT
+            if (paymentMethod === 'gmail_wallet') {
+                submitBtn.innerText = "Paying with Wallet Balance...";
+                submitBtn.disabled = true;
+
+                try {
+                    const res = await fetch(`${API_BASE}/api/user/pay-with-wallet`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email,
+                            productName: currentCheckoutDetails.title,
+                            total: currentCheckoutDetails.amount,
+                            customer: discord || email,
+                            phone,
+                            discord
+                        })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        showToast("Payment Successful via Wallet Balance!");
+                        cart = [];
+                        updateCartUI();
+                        closeModal('checkoutModal');
+                        loggedUserEmail = email;
+                        localStorage.setItem('neo_logged_gmail', email);
+                        checkLoggedGmailUser();
+                        window.location.href = `${API_BASE}${data.downloadUrl}`;
+                    } else {
+                        showToast(data.message || "Wallet payment failed.");
+                        if (data.message && data.message.includes('Insufficient')) {
+                            openUserOrdersModal();
+                            toggleRechargeForm(true);
+                        }
+                    }
+                } catch (err) {
+                    showToast("Server error during wallet payment.");
+                } finally {
+                    submitBtn.innerText = "Pay Now & Get Key";
+                    submitBtn.disabled = false;
+                }
                 return;
             }
 

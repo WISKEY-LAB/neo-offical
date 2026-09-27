@@ -14,6 +14,19 @@ const RESELLERS_PATH = path.join(DATA_DIR, 'resellers.json');
 const RESELLER_HISTORY_PATH = path.join(DATA_DIR, 'reseller_history.json');
 const ADMIN_CONFIG_PATH = path.join(DATA_DIR, 'admin.json');
 const REFERRALS_PATH = path.join(DATA_DIR, 'referrals.json');
+const CATEGORIES_PATH = path.join(DATA_DIR, 'categories.json');
+const SETTINGS_PATH = path.join(DATA_DIR, 'settings.json');
+
+const DEFAULT_CATEGORIES = ['non root panel', 'root panel', 'ios panel', 'crackpanel'];
+const DEFAULT_SETTINGS = { globalSetupVideo: 'https://t.me/neocheatsvideos' };
+
+function getCategories() {
+  return readJson(CATEGORIES_PATH, DEFAULT_CATEGORIES);
+}
+
+function getSettings() {
+  return readJson(SETTINGS_PATH, DEFAULT_SETTINGS);
+}
 
 const PHONEPE_MERCHANT_ID = process.env.PHONEPE_MERCHANT_ID || '';
 const PHONEPE_SALT_KEY = process.env.PHONEPE_SALT_KEY || '';
@@ -784,12 +797,74 @@ app.patch('/api/admin/resellers/:id/category', adminAuth, (req, res) => {
   res.json({ success: true, reseller });
 });
 
+// FULL EDIT RESELLER (Admin)
+app.put('/api/admin/resellers/:id', adminAuth, (req, res) => {
+  const { username, password, name, balance, allowedCategory } = req.body || {};
+  const resellers = readJson(RESELLERS_PATH, []);
+  const reseller = resellers.find(r => r.id === req.params.id);
+
+  if (!reseller) return res.status(404).json({ success: false, message: 'Reseller not found' });
+
+  if (username) reseller.username = String(username).trim();
+  if (password) reseller.password = String(password).trim();
+  if (name) reseller.name = String(name).trim();
+  if (balance !== undefined && balance !== null && balance !== '') reseller.balance = Math.max(0, Number(balance));
+  if (allowedCategory) reseller.allowedCategory = String(allowedCategory).toLowerCase().trim();
+
+  writeJson(RESELLERS_PATH, resellers);
+  res.json({ success: true, reseller });
+});
+
 // DELETE RESELLER (Admin)
 app.delete('/api/admin/resellers/:id', adminAuth, (req, res) => {
   const resellers = readJson(RESELLERS_PATH, []);
   const filtered = resellers.filter(r => r.id !== req.params.id);
   writeJson(RESELLERS_PATH, filtered);
   res.json({ success: true, id: req.params.id });
+});
+
+/* --- CATEGORIES API --- */
+app.get('/api/categories', (req, res) => {
+  const categories = getCategories();
+  res.json(categories);
+});
+
+app.post('/api/admin/categories', adminAuth, (req, res) => {
+  const { category } = req.body || {};
+  if (!category || !String(category).trim()) {
+    return res.status(400).json({ success: false, message: 'Category name required' });
+  }
+  const cleanCat = String(category).trim().toLowerCase();
+  const categories = getCategories();
+  if (!categories.map(c => String(c).toLowerCase()).includes(cleanCat)) {
+    categories.push(cleanCat);
+    writeJson(CATEGORIES_PATH, categories);
+  }
+  res.json({ success: true, categories });
+});
+
+app.delete('/api/admin/categories/:name', adminAuth, (req, res) => {
+  const catName = String(req.params.name || '').trim().toLowerCase();
+  let categories = getCategories();
+  categories = categories.filter(c => String(c).toLowerCase() !== catName);
+  writeJson(CATEGORIES_PATH, categories);
+  res.json({ success: true, categories });
+});
+
+/* --- GLOBAL SETTINGS API (e.g. How to Setup Video) --- */
+app.get('/api/settings', (req, res) => {
+  const settings = getSettings();
+  res.json(settings);
+});
+
+app.post('/api/admin/settings', adminAuth, (req, res) => {
+  const { globalSetupVideo } = req.body || {};
+  const settings = getSettings();
+  if (globalSetupVideo !== undefined) {
+    settings.globalSetupVideo = String(globalSetupVideo).trim();
+  }
+  writeJson(SETTINGS_PATH, settings);
+  res.json({ success: true, settings });
 });
 
 // RESELLER LOGIN
@@ -976,6 +1051,118 @@ app.get('/api/user/orders', (req, res) => {
   });
 
   res.json({ success: true, email, orders: enrichedOrders });
+});
+
+// GET GMAIL USER PROFILE & WALLET BALANCE
+app.get('/api/user/profile', (req, res) => {
+  const email = String(req.query.email || '').trim().toLowerCase();
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ success: false, message: 'Valid email address required' });
+  }
+
+  const user = getOrCreateReferralUser(email);
+  res.json({ success: true, user });
+});
+
+// RECHARGE GMAIL USER WALLET
+app.post('/api/user/recharge-wallet', keyGenLimiter, (req, res) => {
+  const { email, amount, payerUpiId } = req.body || {};
+  const rechargeAmount = Number(amount || 0);
+
+  if (!email || !email.includes('@') || isNaN(rechargeAmount) || rechargeAmount <= 0) {
+    return res.status(400).json({ success: false, message: 'Valid email and recharge amount required' });
+  }
+
+  const cleanEmail = String(email).trim().toLowerCase();
+  const user = getOrCreateReferralUser(cleanEmail);
+  user.walletBalance = (user.walletBalance || 0) + rechargeAmount;
+
+  const referrals = readJson(REFERRALS_PATH, []);
+  const idx = referrals.findIndex(u => u.email.toLowerCase() === cleanEmail);
+  if (idx >= 0) {
+    referrals[idx] = user;
+    writeJson(REFERRALS_PATH, referrals);
+  }
+
+  // Record order
+  const orders = readJson(ORDERS_PATH, []);
+  const orderRecord = createOrderRecord({
+    productName: `USER WALLET RECHARGE (₹${rechargeAmount})`,
+    total: rechargeAmount,
+    customer: `User: ${cleanEmail}`,
+    email: cleanEmail,
+    phone: 'Gmail Wallet Recharge',
+    payerUpiId: payerUpiId || 'GMAIL-WALLET-UPI',
+    paymentMethod: 'online',
+    status: 'paid'
+  });
+  orders.unshift(orderRecord);
+  writeJson(ORDERS_PATH, orders);
+
+  res.json({
+    success: true,
+    message: `₹${rechargeAmount} added to your Gmail Wallet Balance!`,
+    walletBalance: user.walletBalance,
+    user
+  });
+});
+
+// PAY WITH GMAIL WALLET BALANCE
+app.post('/api/user/pay-with-wallet', keyGenLimiter, (req, res) => {
+  const { email, productName, total, customer, phone, discord } = req.body || {};
+  const finalTotal = Number(total || 0);
+
+  if (!email || !email.includes('@') || !productName || finalTotal <= 0) {
+    return res.status(400).json({ success: false, message: 'Missing required details' });
+  }
+
+  const cleanEmail = String(email).trim().toLowerCase();
+  const user = getOrCreateReferralUser(cleanEmail);
+
+  if ((user.walletBalance || 0) < finalTotal) {
+    return res.status(402).json({
+      success: false,
+      message: `Insufficient Wallet Balance! Balance: ₹${user.walletBalance || 0}, Required: ₹${finalTotal}. Please recharge your wallet.`
+    });
+  }
+
+  // Deduct wallet balance
+  user.walletBalance = (user.walletBalance || 0) - finalTotal;
+
+  const referrals = readJson(REFERRALS_PATH, []);
+  const idx = referrals.findIndex(u => u.email.toLowerCase() === cleanEmail);
+  if (idx >= 0) {
+    referrals[idx] = user;
+    writeJson(REFERRALS_PATH, referrals);
+  }
+
+  // Create paid order & issue key
+  const orders = readJson(ORDERS_PATH, []);
+  const order = createOrderRecord({
+    productName: String(productName),
+    total: finalTotal,
+    customer: customer || cleanEmail,
+    email: cleanEmail,
+    phone: phone || 'Wallet Payment',
+    discord: discord || customer || 'Gmail User',
+    payerUpiId: 'GMAIL-WALLET-PAYMENT',
+    paymentMethod: 'gmail_wallet',
+    status: 'paid'
+  });
+
+  orders.unshift(order);
+  writeJson(ORDERS_PATH, orders);
+
+  const downloadUrl = `/order.html?product=${encodeURIComponent(productName)}&total=${finalTotal}&order=${encodeURIComponent(order.id)}`;
+
+  res.json({
+    success: true,
+    message: 'Payment Successful via Wallet Balance!',
+    orderId: order.id,
+    key: order.key,
+    downloadUrl,
+    newBalance: user.walletBalance
+  });
 });
 
 /* --- REFERRAL SYSTEM ENDPOINTS --- */
